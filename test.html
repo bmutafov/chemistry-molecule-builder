@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="node_modules/jointjs/dist/joint.css" />
+  <link rel="stylesheet" type="text/css" href="css/reset.css" />
+  <link rel="stylesheet" type="text/css" href="css/rough.css" />
+  <link rel="stylesheet" type="text/css" href="css/main.css" />
+</head>
+
+<body>
+  <!-- content -->
+  <div id="container">
+    <h3>Compose the molecule of Water (H₂O).</h3>
+    <h5>to connect elements hold <span class="text-highlight">⇧ shift</span> and drag </h5>
+    <div id="myholder"></div>
+    <div class="btn-holder">
+      <button class="btn btn-danger" id="clear"><canvas width="150" height="60" id="clear-butt"></canvas></button>
+
+      <div class="result-box">Your last answer was: <span class="result">-</span></div>
+
+      <button class="btn btn-success" id="submit"><canvas width="150" height="60" id="submit-butt"></button>
+    </div>
+  </div>
+
+  <!-- dependencies -->
+  <script src="node_modules/jquery/dist/jquery.js"></script>
+  <script src="node_modules/lodash/lodash.js"></script>
+  <script src="node_modules/backbone/backbone.js"></script>
+  <script src="node_modules/jointjs/dist/joint.js"></script>
+  <script src="node_modules/roughjs/dist/rough.js"></script>
+
+
+  <!-- code -->
+  <!-- <script type="text/javascript" src="./main.js"></script> -->
+
+  <script type="text/javascript" src="./js/check.js"></script>
+  <script type="text/javascript" src="./js/rough-definitions.js"></script>
+  <script type="text/javascript" src="./js/elements.js"></script>
+  <script type="text/javascript" src="./rough.js"></script>
+  <script type="text/javascript" src="./js/buttons.js"></script>
+</body>
+
+</html>
