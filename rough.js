@@ -20,7 +20,10 @@
     connectionStrategy: joint.connectionStrategies.pinAbsolute,
     defaultConnectionPoint: { name: 'boundary', args: { selector: 'border' } },
     defaultLink: function () {
-      return new RoughLink();
+      let link = new RoughLink();
+      link.set('isModifiable', true);
+      return link;
+
     },
     validateConnection(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
       return isBaseElement(cellViewT.model.cid) === -1
