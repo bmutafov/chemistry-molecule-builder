@@ -8,7 +8,11 @@
 }
 
 h3 {
-  font-family: fantasy;
+  font-family: Papyrus, fantasy;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 700;
+  line-height: 26.4px;
   text-align: center;
   font-size: 22pt;
 }
