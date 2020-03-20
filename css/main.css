@@ -1,3 +1,8 @@
+@font-face {
+  font-family: Ensimmainen;
+  src: url('./fonts/Ensimmainen.ttf');
+}
+
 #container {
   width: 800px;
   margin: 20px auto;
@@ -5,22 +10,19 @@
 
 #myholder {
   margin: 20px 0 0 0;
+  font-family: Ensimmainen !important;
 }
 
 h3 {
-  font-family: Papyrus, fantasy;
-  font-style: normal;
-  font-variant: normal;
-  font-weight: 700;
-  line-height: 26.4px;
+  font-family: Ensimmainen, fantasy;
   text-align: center;
-  font-size: 22pt;
+  font-size: 36pt;
 }
 
 h5 {
-  font-family: fantasy;
+  font-family: Ensimmainen, fantasy;
   text-align: center;
-  font-size: 13pt;
+  font-size: 20pt;
   margin-top: 20px;
 }
 

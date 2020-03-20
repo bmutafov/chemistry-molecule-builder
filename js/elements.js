@@ -68,7 +68,7 @@ class Oxygen extends Element {
 
 class Hydrogen extends Element {
   constructor() {
-    return super('#ff4747', '#333333', 'H');
+    return super('#ff4747', '#ffffff', 'H');
   }
 }
 
