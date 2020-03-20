@@ -120,6 +120,9 @@
     let current = res ? 'correct' : 'incorrect';
     let other = res ? 'incorrect' : 'correct';
     $('.result-box .result').removeClass(other).addClass(current).html(current);
+    if (res) {
+      $('body').html('<h5>Correct! Please answer <a href="https://forms.gle/YTqWUhi3s4r2gMPw7">these questions</a> so we can improve the user experience! </h5> <h5><a href="https://forms.gle/YTqWUhi3s4r2gMPw7"> https://forms.gle/YTqWUhi3s4r2gMPw7 </a></h5>')
+    }
   });
 
   $('#clear').click(e => {
