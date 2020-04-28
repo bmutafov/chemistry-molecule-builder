@@ -4,8 +4,7 @@
 ## API Routes
 Every route starts with the `/api/` prefix.
 
-### /api/users/register
-- Method: **POST**
+### POST /api/users/register
 - Request headers: *none*
 - Response headers: `auth-token` = JWT  
 - Body: **JSON**
@@ -25,8 +24,9 @@ Every route starts with the `/api/` prefix.
 
 --- 
 
-### /api/users/login
-- Method: **POST**
+### POST /api/users/login
+- Request headers: *none*
+- Response headers: `auth-token` = JWT
 - Body: **JSON**
 
 | Key            | Value         | Required | Comment                            |
