@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
 
     try {
         const savedMolecule = await molecule.save();
-        return res.status(200).send(savedMolecule);
+        return res.status(200).send({ error: false, data: savedMolecule });
     } catch (error) {
         return res.status(400).send(error);
     }

@@ -22,7 +22,7 @@ const molecule = require('./routes/molecule');
 
 // Route middlewars
 app.use('/api/user', user);
-app.use('/api/molecule', molecule);
+app.use('/api/molecule', auth, molecule);
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
