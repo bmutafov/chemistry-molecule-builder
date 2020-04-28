@@ -64,7 +64,7 @@ Every route starts with the `/api/` prefix.
   "base": "H", // For element Hydrogen
   "connections": [
     {
-      "valency": 1, // How many connections the element has (valency)
+      "type": 1, // The type of connection between the "base" and "el" (how many lines are drawn to connect them)
       "el": "O", // For connected element Oxygen
     },
     ...
