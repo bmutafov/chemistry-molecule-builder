@@ -1,5 +1,14 @@
-# mutafow.github.io
-## Chemistry idea prototypes for Open Inno
+## Chemistry molecule builder prototype for Open Innovation
+This is the API responsible for handling the back-end of the idea for chemistry molecule builder by Boris Mutafov. 
+
+## Set up
+To start the API, clone this repository and `git checkout API`.
+
+Set up a *.env* file with the following key value pairs in it:
+- **DB_STRING** - connection string to a MongoDB
+- **TOKEN_SECRET** - Secret random string for signing and verifying JWTs
+
+When ready, `npm install` into the terminal and then `npm run dev` for development nodemon start or `npm run start` for production start of the server.
 
 ## API Routes
 Every route starts with the `/api/` prefix.
