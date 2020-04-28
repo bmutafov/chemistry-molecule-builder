@@ -8,6 +8,7 @@ const {
     loginValidation,
     errorMessage,
 } = require('../utils/validation');
+const signToken = require('../utils/sign-token');
 
 router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
@@ -43,12 +44,7 @@ router.post('/register', async (req, res) => {
 
     try {
         const savedUser = await user.save();
-        const token = jwt.sign(
-            {
-                _id: user._id,
-            },
-            process.env.TOKEN_SECRET
-        );
+        const token = signToken(savedUser);
 
         res.header('auth-token', token).send({ error: false, data: { token } });
     } catch (err) {
@@ -81,14 +77,13 @@ router.post('/login', async (req, res) => {
     }
 
     // Create and assign token
-    const token = jwt.sign(
-        {
-            _id: user._id,
-        },
-        process.env.TOKEN_SECRET
-    );
+    try {
+        const token = signToken(user);
 
-    res.header('auth-token', token).send({ error: false, data: { token } });
+        res.header('auth-token', token).send({ error: false, data: { token } });
+    } catch (err) {
+        res.status(400).send(err);
+    }
 });
 
 module.exports = router;
