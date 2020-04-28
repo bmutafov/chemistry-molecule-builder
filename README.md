@@ -40,3 +40,34 @@ Every route starts with the `/api/` prefix.
 | error          | boolean       | If there was an error processing the request       |
 | data           | Object        | JWT if successfull ; error info if unsucessfull    |
 
+---
+
+### POST /api/molecule
+- Request headers: `auth-token` = JWT
+- Response headers: *none*
+- Body: **JSON**
+
+| Key            | Value         | Required | Comment                              |
+| -------------  |:-------------:| :-------:| :----------------------------------- |
+| name           | string        |✓         | The name with words for the molecule |
+| formula        | string        |✓         | The chemical formula for the molecule|
+| solution       | Array*        |✓         | An array containing the solution     |
+- Returns: **JSON**
+
+| Key            | Value         |  Comment                                           |
+| -------------  |:-------------:| :------------------------------------------------- |
+| error          | boolean       | If there was an error processing the request       |
+| data           | Object        | Error data if error ; Molecule object if succesfull|
+- `Array*` - the structure of the array should be: *(for every element in the molecule)*
+```js
+{
+  "base": "H", // For element Hydrogen
+  "connections": [
+    {
+      "valency": 1, // How many connections the element has (valency)
+      "el": "O", // For connected element Oxygen
+    },
+    ...
+  ]
+}
+```
