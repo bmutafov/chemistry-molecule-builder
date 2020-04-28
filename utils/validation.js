@@ -49,6 +49,23 @@ const loginValidation = data => {
     return error ? onError(error) : null;
 };
 
-module.exports.registerValidation = registerValidation;
-module.exports.loginValidation = loginValidation;
-module.exports.errorMessage = errorMessage;
+const moleculeValidation = data => {
+    const schema = Joi.object({
+        name: Joi.string().required(),
+        formula: Joi.string().required(),
+        solution: Joi.array().required(),
+    });
+
+    const { error } = schema.validate(data, {
+        abortEarly: false,
+    });
+
+    return error ? onError(error) : null;
+};
+
+module.exports = {
+    registerValidation,
+    loginValidation,
+    errorMessage,
+    moleculeValidation,
+};
