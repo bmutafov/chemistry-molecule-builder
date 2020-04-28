@@ -7,13 +7,13 @@ const onError = error => {
         context: e.context.key,
         message: e.message,
     }));
-    return { error: true, details: errorResponseObj };
+    return { error: true, data: errorResponseObj };
 };
 
 // Template for error
 const errorMessage = message => ({
     error: true,
-    details: [
+    data: [
         {
             context: 'global',
             message: message,
