@@ -61,20 +61,18 @@ router.post('/login', async (req, res) => {
         return res.status(400).send(validationError);
     }
 
+    const sendError = () => {
+        return res
+            .status(400)
+            .send(errorMessage('Username or password is incorrect.'));
+    };
+
     // CHECK USER CREDENTIALS
     const user = await User.findOne({ username });
-    if (!user) {
-        return res
-            .status(400)
-            .send(errorMessage('Username or password is incorrect.'));
-    }
+    if (!user) return sendError();
 
     const validPass = await bcrypt.compare(password, user.password);
-    if (!validPass) {
-        return res
-            .status(400)
-            .send(errorMessage('Username or password is incorrect.'));
-    }
+    if (!validPass) return sendError();
 
     // Create and assign token
     try {
