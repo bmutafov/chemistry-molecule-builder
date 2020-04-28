@@ -17,10 +17,12 @@ mongoose.connect(
 app.use(express.json());
 
 // Import routes
-const authRoute = require('./routes/user');
+const user = require('./routes/user');
+const molecule = require('./routes/molecule');
 
 // Route middlewars
-app.use('/api/user', authRoute);
+app.use('/api/user', user);
+app.use('/api/molecule', molecule);
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
