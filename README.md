@@ -55,7 +55,8 @@ Every route starts with the `/api/` prefix.
 - Request headers: *none*
 - Response headers: *none*
 - Body: *none*
-- Response: 
+- Response: **JSON**
+
 | Key            | Value         |  Comment                                           |
 | -------------  |:-------------:| :------------------------------------------------- |
 | error          | boolean       | If there was an error processing the request       |
