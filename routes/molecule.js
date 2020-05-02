@@ -5,6 +5,7 @@ const Molecule = require('../model/Molecule');
 const { moleculeValidation, errorMessage } = require('../utils/validation');
 const authMiddleware = require('../middleware/verify-jwt');
 
+// Returns a list with all available molecules
 router.get('/', async (req, res) => {
     try {
         const allMolecules = await Molecule.find();
