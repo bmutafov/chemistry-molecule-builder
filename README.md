@@ -51,6 +51,19 @@ Every route starts with the `/api/` prefix.
 
 ---
 
+### GET /api/molecule
+- Request headers: *none*
+- Response headers: *none*
+- Body: *none*
+- Response: **JSON**
+
+| Key            | Value         |  Comment                                           |
+| -------------  |:-------------:| :------------------------------------------------- |
+| error          | boolean       | If there was an error processing the request       |
+| data           | Object        | Error data if error ; List of all molecule entries if successfull |
+
+---
+
 ### POST /api/molecule
 - Request headers: `auth-token` = JWT
 - Response headers: *none*
@@ -80,3 +93,34 @@ Every route starts with the `/api/` prefix.
   ]
 }
 ```
+---
+
+### PUT /api/molecule/:id
+- Request headers: `auth-token` = JWT
+- Response headers: *none*
+- Body: **JSON**
+
+| Key            | Value         | Required | Comment                              |
+| -------------  |:-------------:| :-------:| :----------------------------------- |
+| name           | string        |          | The name with words for the molecule |
+| formula        | string        |          | The chemical formula for the molecule|
+| solution       | Array*        |          | An array containing the solution     |
+- Returns: **JSON**
+
+| Key            | Value         |  Comment                                           |
+| -------------  |:-------------:| :------------------------------------------------- |
+| error          | boolean       | If there was an error processing the request       |
+| data           | Object        | Error data if error ; Updated object if succesfull |
+
+---
+
+### DELETE /api/molecule/:id
+- Request headers: `auth-token` = JWT
+- Response headers: *none*
+- Body: *none*
+- Returns: **JSON**
+
+| Key            | Value         |  Comment                                           |
+| -------------  |:-------------:| :------------------------------------------------- |
+| error          | boolean       | If there was an error processing the request       |
+| data           | Object        | Error data if error ; deleteCount if succesfull    |
