@@ -1,6 +1,11 @@
 <template>
     <div id="app">
-        <LoginForm />
+        <nav>
+            <router-link to="/">Edit molecules</router-link>
+            <router-link to="/login">Login</router-link>
+        </nav>
+
+        <router-view />
     </div>
 </template>
 
@@ -15,13 +20,8 @@ Vue.$cookies.config('7d');
 Vue.prototype.$http = axios;
 Vue.prototype.$url = 'http://localhost:3000';
 
-import LoginForm from './components/LoginForm.vue';
-
 export default {
     name: 'App',
-    components: {
-        LoginForm,
-    },
 };
 </script>
 
