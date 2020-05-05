@@ -13,7 +13,7 @@ When ready, `npm install` into the terminal and then `npm run dev` for developme
 ## API Routes
 Every route starts with the `/api/` prefix.
 
-### POST /api/users/register
+### POST /api/user/register
 - Request headers: *none*
 - Response headers: `auth-token` = JWT  
 - Body: **JSON**
@@ -33,7 +33,7 @@ Every route starts with the `/api/` prefix.
 
 --- 
 
-### POST /api/users/login
+### POST /api/user/login
 - Request headers: *none*
 - Response headers: `auth-token` = JWT
 - Body: **JSON**
