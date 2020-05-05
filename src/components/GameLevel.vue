@@ -21,7 +21,7 @@ export default Vue.extend({
     data() {
         return {
             background: {
-                color: "antiquewhite"
+                color: "white"
             },
             gridSize: 1,
             drawGrid: false
@@ -31,30 +31,17 @@ export default Vue.extend({
         setupGraph(graph, paper) {
             console.log(graph, paper);
 
-            const RoughElement = this.$roughElementDefinition();
+            // const RoughElement = this.$roughElementDefinition();
             const joint = this.$joint;
 
-            const el = new RoughElement({
-                size: { width: 100, height: 50 },
-                position: { x: 50, y: 50 },
-                attrs: {
-                    body: {
-                        rough: {
-                            hachureAngle: 60,
-                            hachureGap: 8
-                        }
-                    },
-                    border: {
-                        rough: {
-                            hachureAngle: 60,
-                            hachureGap: 8
-                        }
-                    },
-                    label: {
-                        text: "RoughJS"
-                    }
-                }
-            });
+            const el = this.roughCircle("O", "#ff0000", "#ff22ff");
+            const box = this.roughBox();
+            el.set("interactive", false);
+            console.log(el);
+
+            graph.resetCells([box, el]);
+            joint.V(paper.findViewByModel(box).el).addClass("unmovable-cell");
+            // joint.V().addClass("no-cursor");
 
             paper.on({
                 "link:mouseenter": function(linkView) {
@@ -75,6 +62,8 @@ export default Vue.extend({
                     console.log(elementView);
                 },
                 "element:mouseenter": function(elementView) {
+                    console.log(elementView);
+                    if (!elementView.model.get("movable")) return;
                     let model = elementView.model;
                     let bbox = model.getBBox();
                     let ellipseRadius = 1 - Math.cos(joint.g.toRad(45));
@@ -103,10 +92,13 @@ export default Vue.extend({
                     cellView.removeTools();
                 }
             });
-            graph.resetCells([el]);
         }
     }
 });
 </script>
 
-<style scoped></style>
+<style>
+.unmovable-cell {
+    cursor: default !important;
+}
+</style>

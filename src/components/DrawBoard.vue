@@ -40,7 +40,7 @@ export default {
     },
     mounted() {
         console.log(`[${this.name}] Mounted:`, this.$refs.joint);
-        const RoughLink = this.$roughLink();
+        const RoughLink = this.$roughLink;
 
         const paper = new this.$joint.dia.Paper({
             el: this.$refs.joint,
@@ -51,7 +51,6 @@ export default {
             gridSize: this.gridSize,
             drawGrid: this.drawGrid,
             background: this.background,
-            interactive: !this.readonly,
             connectionStrategy: this.$joint.connectionStrategies.pinAbsolute,
             async: true,
             clickTreshold: 5,
@@ -68,6 +67,9 @@ export default {
                 let link = new RoughLink();
                 link.set("isModifiable", true);
                 return link;
+            },
+            interactive: cellView => {
+                return cellView.model.get("movable");
             }
         });
         const rough = Rough.svg(paper.svg);
