@@ -48,11 +48,11 @@ export default {
             return circle;
         };
 
-        Vue.prototype.roughBox = () => {
+        Vue.prototype.roughBox = (width, height, text) => {
             const color = '#fff4b5';
 
             const box = RoughElement.create('rectangle').prop({
-                size: { width: 800, height: 150 },
+                size: { width, height },
                 position: { x: 0, y: 0 },
                 attrs: {
                     body: {
@@ -73,7 +73,7 @@ export default {
                     label: {
                         refX: 100,
                         refY: 10,
-                        text: 'Available elements',
+                        text,
                     },
                 },
             });

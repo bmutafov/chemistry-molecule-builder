@@ -16,14 +16,6 @@ export default {
             type: [String, Number],
             default: 800
         },
-        gridSize: {
-            type: Number,
-            default: 1
-        },
-        drawGrid: {
-            type: [Object, Boolean],
-            default: false
-        },
         background: {
             type: [Object, Boolean],
             default: false
@@ -46,17 +38,16 @@ export default {
             el: this.$refs.joint,
             cellViewNamespace: this.$joint.shapes,
             model: this.graph,
-            width: this.width,
-            height: this.height,
-            gridSize: this.gridSize,
-            drawGrid: this.drawGrid,
+            width: this.config.paper.width,
+            height: this.config.paper.height,
+            gridSize: this.config.paper.gridSize,
+            drawGrid: this.config.paper.drawGrid,
             background: this.background,
             connectionStrategy: this.$joint.connectionStrategies.pinAbsolute,
             async: true,
             clickTreshold: 5,
             defaultConnectionPoint: {
                 name: "bbox"
-                // args: { selector: "border" }
             },
             allowLink: linkView => {
                 const { source, target } = linkView.model.attributes;

@@ -1,10 +1,5 @@
 <template>
-    <DrawBoard
-        :background="background"
-        :grid-size="gridSize"
-        :draw-grid="drawGrid"
-        v-on:init="setupGraph"
-    />
+    <DrawBoard :background="background" v-on:init="setupGraph" />
 </template>
 
 <script lang="ts">
@@ -22,9 +17,7 @@ export default Vue.extend({
         return {
             background: {
                 color: "white"
-            },
-            gridSize: 1,
-            drawGrid: false
+            }
         };
     },
     methods: {
@@ -35,7 +28,11 @@ export default Vue.extend({
                 element.bodyColor,
                 element.labelColor
             );
-            el.position(i * 80 + 20, 60);
+            el.position(
+                i * this.config.availableElements.distance +
+                    this.config.availableElements.xOffset,
+                this.config.availableElements.yOffset
+            );
             el.set("deleteable", false);
             el.set("element", { element, i });
             this.graph.addCells(el);
@@ -49,15 +46,25 @@ export default Vue.extend({
         setupGraph(graph, paper) {
             this.graph = graph;
             const joint = this.$joint;
+            const config = this.config;
 
-            const box = this.roughBox();
+            const box = this.roughBox(
+                config.availableElements.boxWidth,
+                config.availableElements.boxHeight,
+                config.availableElements.boxText
+            );
 
             graph.addCells(box);
 
             this.availableElements([
                 {
                     label: "H",
-                    bodyColor: "#ff00ff",
+                    bodyColor: "#ffffff",
+                    labelColor: "#222222"
+                },
+                {
+                    label: "O",
+                    bodyColor: "#ff2121",
                     labelColor: "#ffffff"
                 }
             ]);
@@ -70,9 +77,8 @@ export default Vue.extend({
                     linkView.addTools(
                         new joint.dia.ToolsView({
                             tools: [
-                                new joint.linkTools.Vertices({ snapRadius: 0 }),
                                 new joint.linkTools.Remove({
-                                    distance: "48%"
+                                    distance: config.link.removeButtOffset
                                 })
                             ]
                         })
@@ -86,7 +92,9 @@ export default Vue.extend({
                 "element:pointerup": elementView => {
                     const currentPos = elementView.model.attributes.position;
 
-                    if (currentPos.y < 160) {
+                    if (
+                        currentPos.y < this.config.availableElements.boxHeight
+                    ) {
                         elementView.model.position(
                             selectedModelPosition.x,
                             selectedModelPosition.y
