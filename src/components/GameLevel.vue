@@ -28,20 +28,42 @@ export default Vue.extend({
         };
     },
     methods: {
+        addAvailableElement(element, i) {
+            console.log(element, i);
+            const el = this.roughCircle(
+                element.label,
+                element.bodyColor,
+                element.labelColor
+            );
+            el.position(i * 80 + 20, 60);
+            el.set("deleteable", false);
+            el.set("element", { element, i });
+            this.graph.addCells(el);
+        },
+        availableElements(elements) {
+            this.elements = elements;
+            elements.forEach((element, i) => {
+                this.addAvailableElement(element, i);
+            });
+        },
         setupGraph(graph, paper) {
-            console.log(graph, paper);
-
-            // const RoughElement = this.$roughElementDefinition();
+            this.graph = graph;
             const joint = this.$joint;
 
-            const el = this.roughCircle("O", "#ff0000", "#ff22ff");
             const box = this.roughBox();
-            el.set("interactive", false);
-            console.log(el);
 
-            graph.resetCells([box, el]);
+            graph.addCells(box);
+
+            this.availableElements([
+                {
+                    label: "H",
+                    bodyColor: "#ff00ff",
+                    labelColor: "#ffffff"
+                }
+            ]);
             joint.V(paper.findViewByModel(box).el).addClass("unmovable-cell");
-            // joint.V().addClass("no-cursor");
+
+            let selectedModelPosition;
 
             paper.on({
                 "link:mouseenter": function(linkView) {
@@ -59,11 +81,34 @@ export default Vue.extend({
                     );
                 },
                 "element:pointerdown": function(elementView) {
-                    console.log(elementView);
+                    selectedModelPosition = {
+                        ...elementView.model.attributes.position
+                    };
+                },
+                "element:pointerup": elementView => {
+                    const currentPos = elementView.model.attributes.position;
+
+                    if (currentPos.y < 160) {
+                        elementView.model.position(
+                            selectedModelPosition.x,
+                            selectedModelPosition.y
+                        );
+                    } else {
+                        if (!elementView.model.get("deleteable")) {
+                            elementView.model.set("deleteable", true);
+                            const { element, i } = elementView.model.get(
+                                "element"
+                            );
+                            this.addAvailableElement(element, i);
+                        }
+                    }
                 },
                 "element:mouseenter": function(elementView) {
-                    console.log(elementView);
-                    if (!elementView.model.get("movable")) return;
+                    if (
+                        !elementView.model.get("movable") ||
+                        !elementView.model.get("deleteable")
+                    )
+                        return;
                     let model = elementView.model;
                     let bbox = model.getBBox();
                     let ellipseRadius = 1 - Math.cos(joint.g.toRad(45));
