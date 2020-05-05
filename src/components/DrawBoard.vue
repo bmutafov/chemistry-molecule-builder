@@ -70,8 +70,8 @@ export default {
         const borderEl = rough.rectangle(
             padding,
             padding,
-            this.width - 2 * padding,
-            this.height - 2 * padding
+            this.config.paper.width - 2 * padding,
+            this.config.paper.height - 2 * padding
         );
         paper.svg.appendChild(borderEl);
         paper.rough = rough;
