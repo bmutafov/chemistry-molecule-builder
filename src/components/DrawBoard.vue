@@ -55,8 +55,12 @@ export default {
             async: true,
             clickTreshold: 5,
             defaultConnectionPoint: {
-                name: "boundary",
-                args: { selector: "border" }
+                name: "bbox"
+                // args: { selector: "border" }
+            },
+            allowLink: linkView => {
+                const { source, target } = linkView.model.attributes;
+                return source.anchor && target.anchor;
             },
             validateMagnet: function(_view, magnet, evt) {
                 return (
@@ -65,7 +69,8 @@ export default {
             },
             defaultLink: function() {
                 let link = new RoughLink();
-                link.set("isModifiable", true);
+                link.set("moveable", true);
+                link.set("deleteable", true);
                 return link;
             },
             interactive: cellView => {

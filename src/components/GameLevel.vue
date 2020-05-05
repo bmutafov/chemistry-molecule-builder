@@ -71,10 +71,8 @@ export default Vue.extend({
                         new joint.dia.ToolsView({
                             tools: [
                                 new joint.linkTools.Vertices({ snapRadius: 0 }),
-                                new joint.linkTools.SourceArrowhead(),
-                                new joint.linkTools.TargetArrowhead(),
                                 new joint.linkTools.Remove({
-                                    distance: 20
+                                    distance: "48%"
                                 })
                             ]
                         })

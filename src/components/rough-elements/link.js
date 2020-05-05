@@ -4,21 +4,14 @@ const RoughLink = dia.Link.define(
     'rough.Link',
     {
         z: 1,
-        source: {
-            selector: 'border',
-        },
-        target: {
-            selector: 'border',
-        },
         attrs: {
             line: {
-                rough: { bowing: 2 },
+                rough: { bowing: 1 },
                 stroke: '#333333',
                 strokeWidth: 2,
                 strokeLinejoin: 'round',
                 targetMarker: {
-                    type: 'path',
-                    d: 'M 10 -5 0 0 10 5 z',
+                    type: 'none',
                 },
             },
             wrapper: {
