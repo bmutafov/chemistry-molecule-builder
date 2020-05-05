@@ -3,6 +3,7 @@
         <nav>
             <router-link to="/">Edit molecules</router-link>
             <router-link to="/login">Login</router-link>
+            <router-link to="/game">Game</router-link>
         </nav>
 
         <router-view />
