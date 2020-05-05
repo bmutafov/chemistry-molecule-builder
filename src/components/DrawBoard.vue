@@ -1,5 +1,8 @@
 <template>
-    <div ref="joint" class="paper"></div>
+    <div>
+        <div ref="joint" class="paper"></div>
+        <button v-on:click="submit">Done</button>
+    </div>
 </template>
 
 <script lang="ts">
@@ -8,21 +11,15 @@ import Rough from "roughjs/bundled/rough.cjs.js";
 export default {
     name: "DrawBoard",
     props: {
-        width: {
-            type: [String, Number],
-            default: 800
-        },
-        height: {
-            type: [String, Number],
-            default: 800
-        },
         background: {
             type: [Object, Boolean],
             default: false
-        },
-        readonly: {
-            type: Boolean,
-            default: false
+        }
+    },
+    methods: {
+        submit() {
+            const data = this.graph.toJSON();
+            console.log(data);
         }
     },
     created() {

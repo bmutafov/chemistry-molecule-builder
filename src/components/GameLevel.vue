@@ -22,7 +22,6 @@ export default Vue.extend({
     },
     methods: {
         addAvailableElement(element, i) {
-            console.log(element, i);
             const el = this.roughCircle(
                 element.label,
                 element.bodyColor,
