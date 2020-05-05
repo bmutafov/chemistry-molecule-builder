@@ -1,5 +1,5 @@
 <template>
-    <div ref="joint"></div>
+    <div ref="joint" class="paper"></div>
 </template>
 
 <script lang="ts">
@@ -93,4 +93,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.paper {
+    font-family: Ensimmainen, fantasy;
+}
+</style>
