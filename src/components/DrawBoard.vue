@@ -109,7 +109,7 @@ export default {
                     if (!elementView.model.get("deleteable")) {
                         elementView.model.set("deleteable", true);
                         const { element, i } = elementView.model.get("element");
-                        this.addAvailableElement(element, i);
+                        this.$emit("addAvailableElement", element, i);
                     }
                 }
             },

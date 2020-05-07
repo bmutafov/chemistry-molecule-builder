@@ -3,14 +3,13 @@
         :background="background"
         v-on:init="setupGraph"
         v-on:submit="onSubmit"
+        v-on:addAvailableElement="addAvailableElement"
     />
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import DrawBoard from "./DrawBoard.vue";
-// import joint from "jointjs";
-// import { RoughElement, RoughLink, Element } from "./rough-elements/element";
 
 export default Vue.extend({
     name: "GameLevel",

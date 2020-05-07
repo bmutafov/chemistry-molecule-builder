@@ -22,7 +22,9 @@ export default Vue.extend({
         };
     },
     methods: {
-        submit(data) {},
+        submit(data) {
+            console.log(data);
+        },
         loggedInCookie() {
             return this.$cookies.get("auth-token") || false;
         },
