@@ -1,4 +1,7 @@
 const router = require('express').Router();
+const isEqual = require('lodash.isequal');
+const xorWith = require('lodash.xorwith');
+const isEmpty = require('lodash.isempty');
 
 const Molecule = require('../model/Molecule');
 
@@ -74,6 +77,20 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     } catch (error) {
         return res.status(400).send(error);
     }
+});
+
+router.post('/check', async (req, res) => {
+    const { formula, solution } = req.body;
+
+    const molecule = await Molecule.find();
+
+    const isArrayEqual = function (x, y) {
+        return isEmpty(xorWith(x, y, isEqual));
+    };
+
+    const correct = isArrayEqual(molecule[0].solution, solution);
+    console.log(correct);
+    return res.status(200).send({ correct });
 });
 
 module.exports = router;
