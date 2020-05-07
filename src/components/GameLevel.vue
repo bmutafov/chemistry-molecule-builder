@@ -52,7 +52,7 @@ export default Vue.extend({
                 this.config.availableElements.yOffset
             );
             el.set("deleteable", false);
-            el.set("element", { element, i });
+            el.set("nodeInfo", { element, i });
             this.graph.addCells(el);
         },
         availableElements(elements) {

@@ -10,6 +10,7 @@
 <script lang="ts">
 import Vue from "vue";
 import GameLevel from "./GameLevel.vue";
+import parseGraph from "../utils/graph-parser";
 
 export default Vue.extend({
     name: "ListMolecules",
@@ -22,8 +23,23 @@ export default Vue.extend({
         };
     },
     methods: {
-        submit(data) {
-            console.log(data);
+        async submit(data) {
+            const parsedGraph = parseGraph(data);
+
+            const result = await this.$http.post(
+                `${this.$url}/api/molecule`,
+                {
+                    name: "test",
+                    formula: "TST",
+                    solution: parsedGraph
+                },
+                {
+                    headers: { "auth-token": this.$cookies.get("auth-token") }
+                }
+            );
+            console.log("check");
+            if (result.status >= 400) return false;
+            console.log("success");
         },
         loggedInCookie() {
             return this.$cookies.get("auth-token") || false;

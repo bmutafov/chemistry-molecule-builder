@@ -108,7 +108,9 @@ export default {
                 } else {
                     if (!elementView.model.get("deleteable")) {
                         elementView.model.set("deleteable", true);
-                        const { element, i } = elementView.model.get("element");
+                        const { element, i } = elementView.model.get(
+                            "nodeInfo"
+                        );
                         this.$emit("addAvailableElement", element, i);
                     }
                 }
