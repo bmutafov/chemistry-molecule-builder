@@ -82,15 +82,19 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 router.post('/check', async (req, res) => {
     const { formula, solution } = req.body;
 
-    const molecule = await Molecule.find();
+    try {
+        const molecule = await Molecule.findOne({ formula });
+        console.log(molecule, 'a');
+        const isArrayEqual = function (x, y) {
+            return isEmpty(xorWith(x, y, isEqual));
+        };
 
-    const isArrayEqual = function (x, y) {
-        return isEmpty(xorWith(x, y, isEqual));
-    };
-
-    const correct = isArrayEqual(molecule[0].solution, solution);
-    console.log(correct);
-    return res.status(200).send({ correct });
+        const correct = isArrayEqual(molecule.solution, solution);
+        console.log(correct);
+        return res.status(200).send({ error: false, data: { correct } });
+    } catch (error) {
+        return res.status(400).send({ error: true, data: { correct: false } });
+    }
 });
 
 module.exports = router;
