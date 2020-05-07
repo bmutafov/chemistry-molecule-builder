@@ -84,13 +84,12 @@ router.post('/check', async (req, res) => {
 
     try {
         const molecule = await Molecule.findOne({ formula });
-        console.log(molecule, 'a');
+
         const isArrayEqual = function (x, y) {
             return isEmpty(xorWith(x, y, isEqual));
         };
 
         const correct = isArrayEqual(molecule.solution, solution);
-        console.log(correct);
         return res.status(200).send({ error: false, data: { correct } });
     } catch (error) {
         return res.status(400).send({ error: true, data: { correct: false } });
