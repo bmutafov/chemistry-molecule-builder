@@ -63,9 +63,29 @@ const moleculeValidation = data => {
     return error ? onError(error) : null;
 };
 
+const elementValidation = data => {
+    const schema = Joi.object({
+        name: Joi.string().required(),
+        sign: Joi.string().min(1).max(2).required(),
+        bgColor: Joi.string()
+            .regex(/^#[A-Fa-f0-9]{6}/)
+            .required(),
+        labelColor: Joi.string()
+            .regex(/^#[A-Fa-f0-9]{6}/)
+            .required(),
+    });
+
+    const { error } = schema.validate(data, {
+        abortEarly: false,
+    });
+
+    return error ? onError(error) : null;
+};
+
 module.exports = {
     registerValidation,
     loginValidation,
     errorMessage,
     moleculeValidation,
+    elementValidation,
 };
