@@ -127,7 +127,7 @@ router.get('/:formula', async (req, res) => {
         });
     }
     molecule.solution = undefined;
-    console.log(molecule);
+
     return res.status(200).send({ error: false, data: molecule });
 });
 
