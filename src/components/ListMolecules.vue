@@ -1,25 +1,55 @@
 <template>
     <div>
-        <li v-for="molecule in molecules" :key="molecule.formula">
-            {{ molecule.name }} ( {{ molecule.formula }})
-        </li>
-        <GameLevel v-bind:onSubmit="submit" elementsLink="/api/element" />
+        <div class="inputs">
+            <InputField
+                label="Molecule name"
+                type="text"
+                name="name"
+                placeholder=""
+                v-model="name"
+                class="mrt-1"
+            />
+            <InputField
+                label="Formula"
+                type="text"
+                name="formula"
+                placeholder=""
+                v-model="formula"
+                class="mrt-1"
+            />
+            <GameLevel
+                class="mrt-1"
+                v-bind:onSubmit="submit"
+                elementsLink="/api/element"
+            />
+        </div>
+
+        <ul class="existing">
+            <h3>Existing molecules</h3>
+            <li v-for="molecule in molecules" :key="molecule.formula">
+                {{ molecule.name }} ( {{ molecule.formula }})
+            </li>
+        </ul>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import InputField from "./InputField.vue";
 import GameLevel from "./GameLevel.vue";
 import parseGraph from "../utils/graph-parser";
 
 export default Vue.extend({
     name: "ListMolecules",
     components: {
-        GameLevel
+        GameLevel,
+        InputField
     },
     data() {
         return {
-            molecules: []
+            molecules: [],
+            name: "",
+            formula: ""
         };
     },
     methods: {
@@ -29,8 +59,8 @@ export default Vue.extend({
             const result = await this.$http.post(
                 `${this.$url}/api/molecule`,
                 {
-                    name: "test",
-                    formula: "TST",
+                    name: this.name,
+                    formula: this.formula,
                     solution: parsedGraph
                 },
                 {
@@ -40,6 +70,10 @@ export default Vue.extend({
             console.log("check");
             if (result.status >= 400) return false;
             console.log("success");
+
+            const newData = await this.retrieveData();
+            console.log(newData);
+            if (newData) this.molecules = newData.molecules;
         },
         loggedInCookie() {
             return this.$cookies.get("auth-token") || false;
@@ -70,4 +104,32 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.mrt-1 {
+    margin-top: 10px;
+}
+
+.inputs {
+    width: 900px;
+    margin: 50px auto;
+    background: #afffce;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.existing {
+    width: 900px;
+    margin: 50px auto;
+    background: #9dffc2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    border-radius: 15px;
+}
+</style>

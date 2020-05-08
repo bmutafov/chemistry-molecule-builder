@@ -1,15 +1,21 @@
 <template>
     <div>
         <div ref="joint" class="paper"></div>
-        <button v-on:click="submit">Done</button>
+        <form id="submit" @submit.prevent="submit">
+            <Button style="margin-top: 10px">Done</Button>
+        </form>
     </div>
 </template>
 
 <script lang="ts">
 import Rough from "roughjs/bundled/rough.cjs.js";
+import Button from "./Button.vue";
 
 export default {
     name: "DrawBoard",
+    components: {
+        Button
+    },
     props: {
         background: {
             type: [Object, Boolean],
@@ -19,6 +25,7 @@ export default {
     methods: {
         submit() {
             const data = this.graph.toJSON();
+            console.log(data, "sbm");
             this.$emit("submit", data);
         }
     },

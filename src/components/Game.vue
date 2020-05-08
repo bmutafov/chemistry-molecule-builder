@@ -1,0 +1,121 @@
+<template>
+    <div class="game-container">
+        <div v-if="allMolecules" class="flex-row">
+            <div v-for="molecule in allMolecules" :key="molecule.formula">
+                <router-link :to="`/game/${molecule.formula}`">{{
+                    molecule.formula
+                }}</router-link>
+                |
+            </div>
+        </div>
+        <div v-if="loading">Loading...</div>
+        <div v-if="name">
+            <h3 class="fancy">
+                Compose the molecule of {{ name }} ({{ formula }}).
+            </h3>
+            <h5 class="fancy">
+                to connect elements hold
+                <span class="text-highlight">⇧ shift</span> and drag
+            </h5>
+
+            <GameLevel
+                v-bind:onSubmit="submit"
+                v-bind:elementsLink="`/api/molecule/elements/${this.formula}`"
+            />
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+import Vue from "vue";
+import GameLevel from "./GameLevel.vue";
+
+export default Vue.extend({
+    name: "Game",
+    components: {
+        GameLevel
+    },
+    data() {
+        return {
+            allMolecules: null,
+            loading: false,
+            name: null,
+            formula: null
+        };
+    },
+    watch: {
+        $route: "fetchData"
+    },
+    methods: {
+        submit(data) {
+            console.log(data);
+        },
+        async fetchData() {
+            this.loading = true;
+            this.formula = null;
+            this.name = null;
+
+            const result = await this.$http.get(
+                `${this.$url}/api/molecule/${this.$route.params.formula}`
+            );
+
+            if (result.status >= 400) {
+                console.error(result);
+            } else {
+                console.log(result.data);
+                this.formula = result.data.data.formula;
+                this.name = result.data.data.name;
+                this.loading = false;
+            }
+
+            const molecules = await this.$http.get(`${this.$url}/api/molecule`);
+            if (molecules.status >= 400) {
+                console.error(molecules);
+            } else {
+                this.allMolecules = molecules.data.data;
+            }
+        }
+    },
+    async created() {
+        await this.fetchData();
+    }
+});
+</script>
+
+<style scoped>
+.fancy {
+    font-family: Ensimmainen, fantasy;
+}
+
+h3 {
+    margin: 10px 0 0 0;
+    font-size: 3em;
+}
+
+h5 {
+    font-size: 2em;
+    margin: 0 0 10px 0px;
+}
+
+.text-highlight {
+    background: rgba(255, 255, 255, 0.4);
+    padding: 8px 10px 4px 10px;
+    border-radius: 5px;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #ffd4d4;
+    padding: 15px;
+    border-radius: 15px;
+    width: 900px;
+    margin: 50px auto;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+</style>

@@ -14,7 +14,9 @@ import DrawBoard from "./DrawBoard.vue";
 export default Vue.extend({
     name: "GameLevel",
     props: {
-        elementsLink: String,
+        elementsLink: {
+            type: String
+        },
         onSubmit: Function
     },
     components: {
@@ -35,6 +37,10 @@ export default Vue.extend({
                     headers: { "auth-token": this.$cookies.get("auth-token") }
                 }
             );
+
+            console.log(this.elementsLink);
+            console.log(resultElements);
+
             if (resultElements.status >= 400) return false;
 
             const data = resultElements.data.data;
