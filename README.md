@@ -83,10 +83,10 @@ Every route starts with the `/api/` prefix.
 - `Array*` - the structure of the array should be: *(for every element in the molecule)*
 ```js
 {
-  "base": "H", // For element Hydrogen
+  "el": "H", // For element Hydrogen
   "connections": [
     {
-      "type": 1, // The type of connection between the "base" and "el" (how many lines are drawn to connect them)
+      "valency": 1, // The type of connection (valency) between the "base el" and "connected el" (how many lines are drawn to connect them)
       "el": "O", // For connected element Oxygen
     },
     ...
@@ -157,6 +157,7 @@ Every route starts with the `/api/` prefix.
 - Request headers: *none*
 - Response headers: *none*
 - Body: **JSON**
+
 | Key            | Value         | Required | Comment                              |
 | -------------  |:-------------:| :-------:| :----------------------------------- |
 | formula        | string        |     ✓    | The chemical formula for the molecule|
@@ -174,6 +175,7 @@ Every route starts with the `/api/` prefix.
 - Request headers: `auth-token` = JWT
 - Response headers: *none*
 - Body: **JSON**
+
 | Key            | Value         | Required | Comment                              |
 | -------------  |:-------------:| :-------:| :----------------------------------- |
 | name           | string        |     ✓    | The name of the molecule (e.g Water) |
