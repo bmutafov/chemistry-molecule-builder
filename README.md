@@ -124,3 +124,80 @@ Every route starts with the `/api/` prefix.
 | -------------  |:-------------:| :------------------------------------------------- |
 | error          | boolean       | If there was an error processing the request       |
 | data           | Object        | Error data if error ; deleteCount if succesfull    |
+
+---
+
+### GET /api/molecule/:formula
+- Request headers: *none*
+- Response headers: *none*
+- Body: *none*
+- Returns: **JSON**
+
+| Key            | Value         |  Comment                                           |
+| -------------  |:-------------:| :------------------------------------------------- |
+| error          | boolean       | If there was an error processing the request       |
+| data           | Object        | Error data if error ; Formula and name of the found molecule|
+
+---
+
+### GET /api/molecule/elements/:formula
+- Request headers: *none*
+- Response headers: *none*
+- Body: *none*
+- Returns: **JSON**
+
+| Key            | Value         |  Comment                                           |
+| -------------  |:-------------:| :------------------------------------------------- |
+| error          | boolean       | If there was an error processing the request       |
+| data           | Object        | Error data if error ; Elements used in the molecule if successful|
+
+---
+
+### POST /api/molecule/check
+- Request headers: *none*
+- Response headers: *none*
+- Body: **JSON**
+| Key            | Value         | Required | Comment                              |
+| -------------  |:-------------:| :-------:| :----------------------------------- |
+| formula        | string        |     ✓    | The chemical formula for the molecule|
+| solution       | Array*        |     ✓    | An array containing the solution of the user     |
+- Returns: **JSON**
+
+| Key            | Value         |  Comment                                           |
+| -------------  |:-------------:| :------------------------------------------------- |
+| error          | boolean       | If there was an error processing the request       |
+| data           | Object        | Error data if error ; Formula and name of the found molecule|
+
+---
+
+### POST /api/element
+- Request headers: `auth-token` = JWT
+- Response headers: *none*
+- Body: **JSON**
+| Key            | Value         | Required | Comment                              |
+| -------------  |:-------------:| :-------:| :----------------------------------- |
+| name           | string        |     ✓    | The name of the molecule (e.g Water) |
+| sign           | string        |     ✓    | The formula of the molecule (e.g H2O)|
+| bgColor        | string        |     ✓    | Hex color for the background         |
+| labelColor     | string        |     ✓    | Hex color for the label              |
+- Returns: **JSON**
+
+| Key            | Value         |  Comment                                           |
+| -------------  |:-------------:| :------------------------------------------------- |
+| error          | boolean       | If there was an error processing the request       |
+| data           | Object        | Error data if error ; Element if succesfull|
+
+---
+
+### GET /api/element
+- Request headers: `auth-token` = JWT
+- Response headers: *none*
+- Body: *none*
+- Returns: **JSON**
+
+| Key            | Value         |  Comment                                           |
+| -------------  |:-------------:| :------------------------------------------------- |
+| error          | boolean       | If there was an error processing the request       |
+| data           | Object        | Error data if error ; List of existing Elements if succesfull|
+
+---
