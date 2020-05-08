@@ -119,13 +119,15 @@ router.get('/elements/:formula', async (req, res) => {
 router.get('/:formula', async (req, res) => {
     const { formula } = req.params;
 
-    const molecule = await Molecule.findOne({ formula });
+    let molecule = await Molecule.findOne({ formula });
     if (!molecule) {
         return res.status(400).send({
             error: true,
             data: { message: 'This formula does not exist' },
         });
     }
+    molecule.solution = undefined;
+    console.log(molecule);
     return res.status(200).send({ error: false, data: molecule });
 });
 
