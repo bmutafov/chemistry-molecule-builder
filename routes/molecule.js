@@ -4,6 +4,7 @@ const xorWith = require('lodash.xorwith');
 const isEmpty = require('lodash.isempty');
 
 const Molecule = require('../model/Molecule');
+const Element = require('../model/Element');
 
 const { moleculeValidation, errorMessage } = require('../utils/validation');
 const authMiddleware = require('../middleware/verify-jwt');
@@ -79,6 +80,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     }
 });
 
+// Checks if a solution is correct
 router.post('/check', async (req, res) => {
     const { formula, solution } = req.body;
 
@@ -94,6 +96,37 @@ router.post('/check', async (req, res) => {
     } catch (error) {
         return res.status(400).send({ error: true, data: { correct: false } });
     }
+});
+
+// Gives the elements used in a formula
+router.get('/elements/:formula', async (req, res) => {
+    const { formula } = req.params;
+
+    const molecule = await Molecule.findOne({ formula });
+
+    if (!molecule) {
+        return res.status(400).send({
+            error: true,
+            data: { message: 'This formula does not exist' },
+        });
+    }
+
+    const elementLabels = [...new Set(molecule.solution.map(e => e.el))];
+    const elements = await Element.find({ sign: { $in: elementLabels } });
+    return res.status(200).send({ error: false, data: elements });
+});
+
+router.get('/:formula', async (req, res) => {
+    const { formula } = req.params;
+
+    const molecule = await Molecule.findOne({ formula });
+    if (!molecule) {
+        return res.status(400).send({
+            error: true,
+            data: { message: 'This formula does not exist' },
+        });
+    }
+    return res.status(200).send({ error: false, data: molecule });
 });
 
 module.exports = router;
