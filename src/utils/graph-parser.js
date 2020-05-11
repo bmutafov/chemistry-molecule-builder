@@ -1,84 +1,98 @@
-// const parseGraph = graph => {
-//     console.log(graph);
-//     const links = graph.cells.filter(cell => cell.type === 'rough.Link');
-//     const nodes = graph.cells.filter(
-//         cell => cell.type === 'rough.Rectangle' && cell.deleteable
-//     );
-
-//     // const molecule = [];
-//     for (let node of nodes) {
-//         const linksWithNodeSource = links.filter(
-//             link => link.source.id === node.id
-//         );
-//         const obj = {
-//             base: node.nodeInfo.element.sign,
-//             connections: [],
-//         };
-//         for (let source in linksWithNodeSource) {
-//             const targetElement = nodes.filter(n => n.id === source.target.id);
-//             obj.connections.filter({ el: targetElement });
-//         }
-//     }
-
-//     console.log(links, nodes);
-// };
-
 const parseGraph = graph => {
-    let links = graph.cells.filter(cell => cell.type === 'rough.Link');
-    let nodes = graph.cells.filter(
-        cell => cell.type === 'rough.Rectangle' && cell.deleteable
-    );
+    /*
+        Separates the links and nodes into separate consts.
+        For nodes cell.deleteable is used to exclude elements other than 
+        the ones used for the solution 
+    */
+    const links = graph.cells.filter(cell => cell.type === 'rough.Link');
+    // prettier-ignore
+    const nodes = graph.cells.filter(cell => cell.type === 'rough.Rectangle' && cell.deleteable);
 
+    /*  
+        Validate that the link starts and ends with a valid node.
+        We try to invalidate and delete links during creation but
+        this is safety net
+    */
     const isLinkValid = link =>
         nodes.some(node => node.id === link.source.id) &&
         nodes.some(node => node.id === link.target.id);
 
-    if (!links.every(link => isLinkValid(link))) return false;
-    const elementNodes = nodes.map(node => {
-        console.log(node);
-        return {
-            id: node.id,
-            el: node.nodeInfo.element.sign,
-            connections: [],
-        };
-    });
+    if (!links.every(isLinkValid)) return false;
+
+    /* 
+        Creates the structure for every node that the solution uses
+    */
+    const elementNodes = nodes.map(node => ({
+        id: node.id,
+        el: node.nodeInfo.element.sign,
+        connections: [],
+    }));
 
     for (const element of elementNodes) {
+        /*
+            Get all links where the current element is either a target or source of the link
+            The const should contain the id's of the connected elements to the current iterated
+            element
+        */
         const connections = links
             .filter(
                 link =>
                     link.target.id === element.id ||
                     link.source.id === element.id
             )
-            .map(conn =>
-                conn.source.id === element.id ? conn.target.id : conn.source.id
-            );
-        for (let i = 0; i < connections.length; i++) {
-            const countOfConnections = connections.filter(
-                conn => conn === connections[i]
-            ).length;
+            .map(conn => ({
+                iterated: false,
+                id:
+                    conn.source.id === element.id
+                        ? conn.target.id
+                        : conn.source.id,
+            }));
 
+        /*
+            Iterates through all connections to the current node
+        */
+        for (const connection of connections) {
+            /*
+                Check if we already iterated over another connection
+                between the same elements
+            */
+            const sameElementConnections = connections.filter(
+                conn => conn.id === connection.id
+            );
+
+            if (sameElementConnections.some(conn => conn.iterated)) continue;
+
+            /*
+                valency = how many links between the two elements
+            */
+            const valency = sameElementConnections.length;
+
+            /*
+                Find what elemnent is the connected one
+            */
             const { el } = elementNodes.find(
-                elNode => elNode.id === connections[i]
+                elementNode => elementNode.id === connection.id
             );
 
-            const existInConnections = element.connections.findIndex(
-                e => e.el === el
-            );
-            if (existInConnections > -1) {
-                connections[existInConnections].valency++;
-            } else {
-                element.connections.push({
-                    valency: countOfConnections,
-                    el,
-                });
-            }
+            /*
+                Push element to the array of connections
+                Set a flag that we already iterated that connection
+            */
+            element.connections.push({
+                valency,
+                el,
+            });
+
+            connection.iterated = true;
         }
     }
 
+    /*
+        Remove irrelevant infomration for the server and return
+    */
     elementNodes.forEach(el => delete el.id);
 
     return elementNodes;
 };
 
-module.exports = parseGraph;
+export default parseGraph;
