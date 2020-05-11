@@ -1,11 +1,12 @@
 <template>
-    <div class="game-container">
+    <div>
         <div v-if="allMolecules" class="flex-row">
             <div v-for="molecule in allMolecules" :key="molecule.formula">
-                <router-link :to="`/game/${molecule.formula}`">{{
-                    molecule.formula
-                }}</router-link>
-                |
+                <div class="element-link">
+                    <router-link :to="`/game/${molecule.formula}`">{{
+                        molecule.formula
+                    }}</router-link>
+                </div>
             </div>
         </div>
         <div v-if="loading">Loading...</div>
@@ -98,24 +99,29 @@ h5 {
 }
 
 .text-highlight {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 1);
     padding: 8px 10px 4px 10px;
     border-radius: 5px;
-}
-
-.game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #ffd4d4;
-    padding: 15px;
-    border-radius: 15px;
-    width: 900px;
-    margin: 50px auto;
 }
 
 .flex-row {
     display: flex;
     flex-direction: row;
+}
+
+.element-link {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 3px;
+}
+
+.element-link:hover {
+    box-shadow: 0px 2px 3px #a8a8a8;
+}
+
+.element-link a {
+    color: #222;
+    text-decoration: none;
 }
 </style>

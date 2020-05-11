@@ -17,17 +17,22 @@
                 v-model="formula"
                 class="mrt-1"
             />
-            <GameLevel
-                class="mrt-1"
-                v-bind:onSubmit="submit"
-                elementsLink="/api/element"
-            />
         </div>
+        <GameLevel
+            class="mrt-1 game-level"
+            v-bind:onSubmit="submit"
+            elementsLink="/api/element"
+        />
+        <h3>Existing molecules</h3>
 
         <ul class="existing">
-            <h3>Existing molecules</h3>
             <li v-for="molecule in molecules" :key="molecule.formula">
-                {{ molecule.name }} ( {{ molecule.formula }})
+                <b>{{ molecule.name }}</b> ( {{ molecule.formula }} )
+                <img
+                    src="https://img.icons8.com/flat_round/16/000000/delete-sign.png"
+                    v-on:click="remove(molecule._id)"
+                    class="remove-butt"
+                />
             </li>
         </ul>
     </div>
@@ -53,6 +58,17 @@ export default Vue.extend({
         };
     },
     methods: {
+        async remove(id) {
+            const result = await this.$http.delete(
+                `${this.$url}/api/molecule/${id}`,
+                {
+                    headers: { "auth-token": this.$cookies.get("auth-token") }
+                }
+            );
+
+            if (result.status >= 400) console.error("erorr", result);
+            else this.molecules = this.molecules.filter(m => m._id !== id);
+        },
         async submit(data) {
             const parsedGraph = parseGraph(data);
 
@@ -67,9 +83,7 @@ export default Vue.extend({
                     headers: { "auth-token": this.$cookies.get("auth-token") }
                 }
             );
-            console.log("check");
             if (result.status >= 400) return false;
-            console.log("success");
 
             const newData = await this.retrieveData();
             console.log(newData);
@@ -110,26 +124,36 @@ export default Vue.extend({
 }
 
 .inputs {
-    width: 900px;
-    margin: 50px auto;
-    background: #afffce;
+    width: 300px;
+    margin: 0 auto;
+}
+
+.game-level {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 15px;
-    border-radius: 15px;
 }
 
 .existing {
-    width: 900px;
-    margin: 50px auto;
-    background: #9dffc2;
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    flex-direction: row;
+    list-style-type: none;
+}
+
+.existing li {
+    background: #ffffff;
     padding: 15px;
-    border-radius: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 2px #cfcfcf;
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.remove-butt {
+    cursor: pointer;
+    margin-left: 5px;
 }
 </style>
