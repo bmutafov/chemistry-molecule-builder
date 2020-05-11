@@ -152,4 +152,9 @@ export default Vue.extend({
 .mrt-1 {
     margin-top: 10px;
 }
+
+.remove-butt {
+    cursor: pointer;
+    margin-left: 5px;
+}
 </style>

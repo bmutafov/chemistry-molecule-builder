@@ -1,5 +1,6 @@
 <template>
     <div>
+        <h3>Add molecule</h3>
         <div class="inputs">
             <InputField
                 label="Molecule name"

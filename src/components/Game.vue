@@ -30,6 +30,7 @@
 <script lang="ts">
 import Vue from "vue";
 import GameLevel from "./GameLevel.vue";
+import parseGraph from "../utils/graph-parser";
 
 export default Vue.extend({
     name: "Game",
@@ -48,8 +49,23 @@ export default Vue.extend({
         $route: "fetchData"
     },
     methods: {
-        submit(data) {
-            console.log(data);
+        async submit(data) {
+            const parsedData = parseGraph(data);
+
+            const result = await this.$http.post(
+                `${this.$url}/api/molecule/check`,
+                { formula: this.formula, solution: parsedData }
+            );
+
+            console.log(result);
+
+            if (result.status === 200) {
+                alert(
+                    `Your solution was ${
+                        result.data.data.correct ? "correct" : "incorrect"
+                    }`
+                );
+            }
         },
         async fetchData() {
             this.loading = true;
