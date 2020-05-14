@@ -3,7 +3,7 @@ import { dia } from 'jointjs/src/core.mjs';
 const RoughLink = dia.Link.define(
     'rough.Link',
     {
-        z: 1,
+        z: 5,
         attrs: {
             line: {
                 rough: { bowing: 1 },

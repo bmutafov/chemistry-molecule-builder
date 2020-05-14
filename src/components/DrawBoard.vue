@@ -51,7 +51,7 @@ export default {
             async: true,
             clickTreshold: 5,
             defaultConnectionPoint: {
-                name: "bbox"
+                name: "boundary"
             },
             allowLink: linkView => {
                 const { source, target } = linkView.model.attributes;

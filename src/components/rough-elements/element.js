@@ -3,7 +3,7 @@ import { dia, V } from 'jointjs/src/core.mjs';
 const RoughElement = dia.Element.define(
     'rough.Rectangle',
     {
-        z: 2,
+        z: 6,
         attrs: {
             root: {
                 magnet: false,
