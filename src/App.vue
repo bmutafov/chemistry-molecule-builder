@@ -14,25 +14,27 @@
 </template>
 
 <script>
-import Vue from "vue";
-import axios from "axios";
-import VueCookies from "vue-cookies";
+import Vue from 'vue';
+import axios from 'axios';
+import VueCookies from 'vue-cookies';
 
 Vue.use(VueCookies);
-Vue.$cookies.config("7d");
+Vue.$cookies.config('7d');
 
 Vue.prototype.$http = axios;
-Vue.prototype.$url = "http://localhost:3000";
+Vue.prototype.$url = process.env.PROD
+    ? 'https://chem-proto-1.herokuapp.com/'
+    : 'http://localhost:3000';
 
 export default {
-    name: "App"
+    name: 'App',
 };
 </script>
 
 <style>
 @font-face {
     font-family: Ensimmainen;
-    src: url("../public/fonts/Ensimmainen.ttf");
+    src: url('../public/fonts/Ensimmainen.ttf');
 }
 
 nav a {
