@@ -91,7 +91,9 @@ router.post('/check', async (req, res) => {
             return isEmpty(xorWith(x, y, isEqual));
         };
 
-        const correct = isArrayEqual(molecule.solution, solution);
+        const correct =
+            isArrayEqual(molecule.solution, solution) &&
+            molecule.solution.length === solution.length;
         return res.status(200).send({ error: false, data: { correct } });
     } catch (error) {
         return res.status(400).send({ error: true, data: { correct: false } });
