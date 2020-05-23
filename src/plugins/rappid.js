@@ -71,7 +71,7 @@ export default {
                         },
                     },
                     label: {
-                        refX: 100,
+                        refX: 50,
                         refY: 10,
                         text,
                     },

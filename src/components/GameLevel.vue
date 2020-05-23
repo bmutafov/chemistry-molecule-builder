@@ -1,10 +1,13 @@
 <template>
-    <DrawBoard
-        :background="background"
-        v-on:init="setupGraph"
-        v-on:submit="onSubmit"
-        v-on:addAvailableElement="addAvailableElement"
-    />
+    <div>
+        <DrawBoard
+            :background="background"
+            v-on:init="setupGraph"
+            v-on:submit="onSubmit"
+            v-on:addAvailableElement="addAvailableElement"
+            v-bind:color="color"
+        />
+    </div>
 </template>
 
 <script lang="ts">
@@ -17,7 +20,8 @@ export default Vue.extend({
         elementsLink: {
             type: String
         },
-        onSubmit: Function
+        onSubmit: Function,
+        color: String
     },
     components: {
         DrawBoard
@@ -53,9 +57,9 @@ export default Vue.extend({
                 element.labelColor
             );
             el.position(
+                this.config.availableElements.xOffset,
                 i * this.config.availableElements.distance +
-                    this.config.availableElements.xOffset,
-                this.config.availableElements.yOffset
+                    this.config.availableElements.yOffset
             );
             el.set("deleteable", false);
             el.set("nodeInfo", { element, i });
@@ -71,9 +75,15 @@ export default Vue.extend({
             const joint = this.$joint;
             const config = this.config;
 
+            const HEIGHT = Math.max(
+                document.documentElement.clientHeight,
+                window.innerHeight || 0
+            );
             const box = this.roughBox(
                 config.availableElements.boxWidth,
-                config.availableElements.boxHeight,
+                config.availableElements.boxHeight === "vh"
+                    ? HEIGHT
+                    : config.availableElements.boxHeight,
                 config.availableElements.boxText
             );
 

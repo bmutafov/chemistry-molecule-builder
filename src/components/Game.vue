@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div v-if="allMolecules" class="flex-row">
+    <div v-bind:style="`background: ${color}`">
+        <!-- <div v-if="allMolecules" class="flex-row">
             <div v-for="molecule in allMolecules" :key="molecule.formula">
                 <div class="element-link">
                     <router-link :to="`/game/${molecule.formula}`">{{
@@ -8,20 +8,27 @@
                     }}</router-link>
                 </div>
             </div>
+        </div> -->
+        <div class="answer">
+            Your last answer was:
+            <span class="emphasize">{{ correctText }}</span>
         </div>
         <div v-if="loading">Loading...</div>
         <div v-if="name">
-            <h3 class="fancy">
-                Compose the molecule of {{ name }} ({{ formula }}).
-            </h3>
-            <h5 class="fancy">
-                to connect elements hold
-                <span class="text-highlight">⇧ shift</span> and drag
-            </h5>
+            <div class="instructions">
+                <h3 class="fancy">
+                    Compose the molecule of {{ name }} ({{ formula }}).
+                </h3>
+                <h5 class="fancy">
+                    to connect elements hold
+                    <span class="text-highlight">⇧ shift</span> and drag
+                </h5>
+            </div>
 
             <GameLevel
                 v-bind:onSubmit="submit"
                 v-bind:elementsLink="`/api/molecule/elements/${this.formula}`"
+                v-bind:color="color"
             />
         </div>
     </div>
@@ -42,7 +49,9 @@ export default Vue.extend({
             allMolecules: null,
             loading: false,
             name: null,
-            formula: null
+            formula: null,
+            color: "#68b8e3",
+            correctText: "no answer yet"
         };
     },
     watch: {
@@ -60,11 +69,14 @@ export default Vue.extend({
             console.log(result);
 
             if (result.status === 200) {
-                alert(
-                    `Your solution was ${
-                        result.data.data.correct ? "correct" : "incorrect"
-                    }`
-                );
+                const isCorrect = result.data.data.correct;
+                if (isCorrect) {
+                    this.color = "#65ff4a";
+                    this.correctText = "correct";
+                } else {
+                    this.color = "#ff3333";
+                    this.correctText = "incorrect";
+                }
             }
         },
         async fetchData() {
@@ -104,9 +116,17 @@ export default Vue.extend({
     font-family: Ensimmainen, fantasy;
 }
 
+.instructions {
+    margin: 0;
+    height: 100px;
+    position: absolute;
+    left: 150px;
+    z-index: 100;
+}
+
 h3 {
     margin: 10px 0 0 0;
-    font-size: 3em;
+    font-size: 2.5em;
 }
 
 h5 {
@@ -115,9 +135,10 @@ h5 {
 }
 
 .text-highlight {
-    background: rgba(255, 255, 255, 1);
+    background: rgba(0, 0, 0, 0.05);
     padding: 8px 10px 4px 10px;
     border-radius: 5px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
 .flex-row {
@@ -139,5 +160,25 @@ h5 {
 .element-link a {
     color: #222;
     text-decoration: none;
+}
+
+.answer {
+    position: absolute;
+    width: 25%;
+    height: 30%;
+    right: 0;
+    top: 100px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    font-family: Ensimmainen;
+    color: black;
+    font-size: 50px;
+    font-weight: 500;
+    z-index: 10;
+}
+
+.answer .emphasize {
+    font-weight: 800;
 }
 </style>

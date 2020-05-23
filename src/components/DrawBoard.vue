@@ -1,32 +1,78 @@
 <template>
     <div>
         <div ref="joint" class="paper"></div>
-        <form id="submit" @submit.prevent="submit">
-            <Button style="margin-top: 10px">Done</Button>
-        </form>
+        <div class="submit-butt-wrapper" @click="submit">
+            <div class="submit-butt-inner-wrapper">
+                <canvas
+                    id="submit-butt"
+                    class="submit-butt"
+                    width="150"
+                    height="80"
+                ></canvas>
+                <div class="submit-butt-text">DONE</div>
+            </div>
+        </div>
+        <!-- <form id="submit" @submit.prevent="submit">
+            <button class="submit-butt">Done</button>
+        </form> -->
     </div>
 </template>
 
 <script lang="ts">
 import Rough from "roughjs/bundled/rough.cjs.js";
-import Button from "./Button.vue";
 
 export default {
     name: "DrawBoard",
-    components: {
-        Button
-    },
+    components: {},
     props: {
         background: {
             type: [Object, Boolean],
             default: false
-        }
+        },
+        color: String
     },
     methods: {
         submit() {
             const data = this.graph.toJSON();
             console.log(data, "sbm");
             this.$emit("submit", data);
+        },
+        createDoneButt() {
+            const cnv = document.getElementById("submit-butt");
+            const rc = Rough.canvas(cnv);
+            rc.rectangle(0, 0, 150, 80, {
+                fill: "#43bf5a",
+                fillStyle: "solid",
+                strokeWidth: 4
+            });
+        },
+        drawRough() {
+            const rough = Rough.svg(this.paper.svg);
+            let points = [];
+            for (let i = 0; i < 70; i++) {
+                // 4pi - 400px
+                let x = (400 / 20) * i;
+                let xdeg = ((Math.PI / 100) * x) / 2;
+                let y = Math.round(Math.sin(xdeg) * 60) + this.WIDTH * 0.9;
+                points.push([y, x]);
+            }
+            points.push([this.WIDTH + 50, this.HEIGHT]);
+            points.push([this.WIDTH + 50, 0]);
+
+            var borderEl = rough.curve(points, {
+                roughness: 1.5,
+                strokeWidth: 5,
+                fill: this.color,
+                fillStyle: "solid"
+            });
+            this.paper.svg.appendChild(borderEl);
+            this.paper.rough = rough;
+        }
+    },
+    watch: {
+        color: function(newVal, oldVal) {
+            console.log(newVal, oldVal);
+            this.drawRough();
         }
     },
     created() {
@@ -35,15 +81,27 @@ export default {
         this.graph = new this.$joint.dia.Graph();
     },
     mounted() {
-        console.log(`[${this.name}] Mounted:`, this.$refs.joint);
+        this.createDoneButt();
+
+        console.log(`[${this.name}] Mounted 1:`, this.$refs.joint);
         const RoughLink = this.$roughLink;
+
+        this.WIDTH =
+            Math.max(
+                document.documentElement.clientWidth,
+                window.innerWidth || 0
+            ) * 0.8; //this.config.paper.width
+        this.HEIGHT = Math.max(
+            document.documentElement.clientHeight,
+            window.innerHeight || 0
+        ); //this.config.paper.height
 
         const paper = new this.$joint.dia.Paper({
             el: this.$refs.joint,
             cellViewNamespace: this.$joint.shapes,
             model: this.graph,
-            width: this.config.paper.width,
-            height: this.config.paper.height,
+            width: this.WIDTH,
+            height: this.HEIGHT,
             gridSize: this.config.paper.gridSize,
             drawGrid: this.config.paper.drawGrid,
             background: this.background,
@@ -72,16 +130,9 @@ export default {
                 return cellView.model.get("movable");
             }
         });
-        const rough = Rough.svg(paper.svg);
-        const padding = 4;
-        const borderEl = rough.rectangle(
-            padding,
-            padding,
-            this.config.paper.width - 2 * padding,
-            this.config.paper.height - 2 * padding
-        );
-        paper.svg.appendChild(borderEl);
-        paper.rough = rough;
+        this.paper = paper;
+
+        this.drawRough();
 
         const joint = this.$joint;
         const config = this.config;
@@ -165,5 +216,35 @@ export default {
 <style scoped>
 .paper {
     font-family: Ensimmainen, fantasy;
+}
+
+.submit-butt-wrapper {
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    width: 150px;
+    height: 80px;
+    cursor: pointer;
+}
+
+.submit-butt-inner-wrapper {
+    position: relative;
+}
+
+.submit-butt-inner-wrapper canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.submit-butt-text {
+    font-family: Ensimmainen, fantasy;
+    font-size: 40px;
+    color: black;
+    font-weight: bold;
+    position: absolute;
+    top: 20px;
+    width: 150px;
+    text-align: center;
 }
 </style>

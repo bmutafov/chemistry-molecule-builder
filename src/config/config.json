@@ -1,17 +1,15 @@
 {
     "paper": {
-        "width": 800,
-        "height": 800,
         "gridSize": 1,
         "drawGrid": false
     },
     "availableElements": {
         "distance": 80,
-        "xOffset": 20,
-        "yOffset": 60,
-        "boxWidth": 800,
-        "boxHeight": 160,
-        "boxText": "Available elements"
+        "xOffset": 15,
+        "yOffset": 100,
+        "boxWidth": 100,
+        "boxHeight": "vh",
+        "boxText": "Elements"
     },
     "link": {
         "removeButtOffset": "48%"
