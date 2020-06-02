@@ -82,21 +82,35 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
 // Checks if a solution is correct
 router.post('/check', async (req, res) => {
-    const { formula, solution } = req.body;
-
-    try {
         const molecule = await Molecule.findOne({ formula });
 
-        const isArrayEqual = function (x, y) {
-            return isEmpty(xorWith(x, y, isEqual));
+        const byLengthAndElement = (a, b) => {
+            if (a.connections.length === b.connections.length) {
+                return a.el < b.el ? 1 : -1;
+            }
+            return a.connections.length < b.connections.length ? 1 : -1;
         };
 
-        const correct =
-            isArrayEqual(molecule.solution, solution) &&
-            molecule.solution.length === solution.length;
+        const isArrayEqual = function (x, y) {
+            if (x.length !== y.length) return false;
+
+            for (let i = 0; i < x.length; i++) {
+                if (x[i].el !== y[i].el) return false;
+                if (!isEmpty(xorWith(x[i].connections, y[i].connections, isEqual))) return false;
+            }
+            return true;
+            // return isEmpty(xorWith(x, y, isEqual));
+        };
+
+        solution.sort(byLengthAndElement);
+
+        molecule.solution.sort(byLengthAndElement);
+
+        const correct = isArrayEqual(solution, molecule.solution) && molecule.solution.length === solution.length;
         return res.status(200).send({ error: false, data: { correct } });
     } catch (error) {
-        return res.status(400).send({ error: true, data: { correct: false } });
+        console.log(error)
+        return res.status(500).send({ error: true, data: { correct: false } });
     }
 });
 
