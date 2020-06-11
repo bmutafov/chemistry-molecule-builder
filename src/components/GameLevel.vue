@@ -1,104 +1,190 @@
 <template>
-    <div>
-        <DrawBoard
-            :background="background"
-            v-on:init="setupGraph"
-            v-on:submit="onSubmit"
-            v-on:addAvailableElement="addAvailableElement"
-            v-bind:color="color"
-        />
+    <div style="height: 100%">
+        <CssLoader v-if="loading" />
+        <div class="flex-col" v-else>
+            <div class="instructions">
+                <h3 class="fancy">Compose the molecule of {{ name }} ({{ formula }})</h3>
+            </div>
+            <div id="paper-container">
+                <Canvas :background="background" :paperHolderId="paperHolderId" v-on:init="setupGraph" v-on:addAvailableElement="addAvailableElement" v-bind:color="color" />
+            </div>
+            <div style="padding: 20px">
+                <DoneButton @submit="submit" />
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import DrawBoard from "./DrawBoard.vue";
+import Vue from 'vue';
+import Canvas from './Canvas.vue';
+import DoneButton from './DoneButton.vue';
+import CssLoader from './CssLoader.vue';
+import parseGraph from '../utils/graph-parser';
 
 export default Vue.extend({
-    name: "GameLevel",
+    name: 'GameLevel',
     props: {
         elementsLink: {
-            type: String
+            type: String,
         },
         onSubmit: Function,
-        color: String
+        color: String,
     },
     components: {
-        DrawBoard
+        Canvas,
+        DoneButton,
+        CssLoader,
     },
     data() {
         return {
             background: {
-                color: "white"
-            }
+                color: 'white',
+            },
+            loading: true,
+            name: null,
+            formula: null,
+            paperHolderId: 'paper-container',
         };
     },
     methods: {
-        async fetchData() {
-            const resultElements = await this.$http.get(
-                `${this.$url}${this.elementsLink}`,
-                {
-                    headers: { "auth-token": this.$cookies.get("auth-token") }
-                }
-            );
-
-            console.log(this.elementsLink);
-            console.log(resultElements);
+        /* Sends get request to the API to retrieve the elements included in the current molecule */
+        async getElementsForRender() {
+            const url = `${this.$url}/api/molecule/elements/${this.formula}`;
+            console.log(`Get: ${url}`);
+            const resultElements = await this.$http.get(url);
 
             if (resultElements.status >= 400) return false;
 
             const data = resultElements.data.data;
             return data;
         },
-        addAvailableElement(element, i) {
-            const el = this.roughCircle(
-                element.sign,
-                element.bgColor,
-                element.labelColor
-            );
-            el.position(
-                this.config.availableElements.xOffset,
-                i * this.config.availableElements.distance +
-                    this.config.availableElements.yOffset
-            );
-            el.set("deleteable", false);
-            el.set("nodeInfo", { element, i });
+        async getMoleculeData() {
+            this.loading = true;
+            this.formula = null;
+            this.name = null;
+
+            console.log(this.$route.params.formula);
+
+            const url = `${this.$url}/api/molecule/${this.$route.params.formula}`;
+            console.log(`url: ${url}`);
+            const result = await this.$http.get(url);
+
+            console.log(result);
+            if (result.status >= 400) {
+                console.error(result);
+            } else {
+                this.formula = result.data.data.formula;
+                this.name = result.data.data.name;
+                this.loading = false;
+            }
+        },
+        /* Adds the element to the canvas */
+        addAvailableElement(element, i, count) {
+            // Creates the element
+
+            let radius = 70;
+            const offsetPerElement = () => radius + this.config.availableElements.distance;
+
+            const width = document.getElementById('paper-container').clientWidth;
+            const { xOffset } = this.config.availableElements;
+            function calculateRadius() {
+                const elementsTotalWidth = count * offsetPerElement() + xOffset;
+
+                if (width < elementsTotalWidth) {
+                    radius -= 5;
+                    calculateRadius();
+                } else {
+                    return;
+                }
+            }
+
+            calculateRadius();
+
+            console.log(radius);
+
+            const el = this.roughCircle(radius, element.sign, element.bgColor, element.labelColor);
+
+            // Sets it position {x, y}
+            el.position(i * offsetPerElement() + this.config.availableElements.xOffset, this.config.availableElements.yOffset);
+
+            // Set it to be non-deleteable and attach its information
+            el.set('deleteable', false);
+            el.set('nodeInfo', { element, i });
+
+            // Add the elements to the graph
             this.graph.addCells(el);
         },
-        availableElements(elements) {
-            elements.forEach((element, i) => {
-                this.addAvailableElement(element, i);
-            });
-        },
+        /* Callback on the init listener from <Canvas></Canvas>*/
         async setupGraph(graph, paper) {
             this.graph = graph;
             const joint = this.$joint;
             const config = this.config;
 
-            const HEIGHT = Math.max(
-                document.documentElement.clientHeight,
-                window.innerHeight || 0
-            );
-            const box = this.roughBox(
-                config.availableElements.boxWidth,
-                config.availableElements.boxHeight === "vh"
-                    ? HEIGHT
-                    : config.availableElements.boxHeight,
-                config.availableElements.boxText
-            );
+            // Creates the element holder box
+            const box = this.roughBox(document.getElementById('paper-container').clientWidth, config.availableElements.boxHeight, config.availableElements.boxText);
 
             graph.addCells(box);
 
-            const data = await this.fetchData();
-            this.availableElements(data);
-            joint.V(paper.findViewByModel(box).el).addClass("unmovable-cell");
-        }
-    }
+            // Fetches and renders the lements
+            const data = await this.getElementsForRender();
+            data.forEach((element, i) => this.addAvailableElement(element, i, data.length));
+
+            // Adds .unmovable-cell class to the holder box to attach custom styles
+            joint.V(paper.findViewByModel(box).el).addClass('unmovable-cell');
+        },
+        /* On submit handler */
+        async submit() {
+            const data = this.graph.toJSON();
+            const parsedData = parseGraph(data);
+
+            const result = await this.$http.post(`${this.$url}/api/molecule/check`, { formula: this.formula, solution: parsedData });
+
+            console.log(result);
+
+            if (result.status === 200) {
+                const isCorrect = result.data.data.correct;
+                console.log(isCorrect);
+            }
+        },
+    },
+    async beforeMount() {
+        await this.getMoleculeData();
+    },
 });
 </script>
 
 <style>
 .unmovable-cell {
     cursor: default !important;
+}
+
+#paper-container {
+    width: 100%;
+    height: 100%;
+}
+
+.fancy {
+    font-family: Ensimmainen, fantasy;
+}
+
+.instructions {
+    margin: 0;
+    margin: 10px 0;
+}
+
+h3 {
+    font-size: 2.5em;
+    margin: 0;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-col:nth-child(1) {
+    flex-grow: 4;
+    height: 100%;
 }
 </style>

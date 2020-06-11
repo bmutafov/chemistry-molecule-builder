@@ -16,9 +16,9 @@ export default {
 
         Vue.prototype.$roughLink = RoughLink;
 
-        Vue.prototype.roughCircle = (label, bodyColor, labelColor) => {
+        Vue.prototype.roughCircle = (radius, label, bodyColor, labelColor) => {
             const circle = RoughElement.create('ellipse').prop({
-                size: { width: 70, height: 70 },
+                size: { width: radius, height: radius },
                 position: { x: 0, y: 0 },
                 attrs: {
                     body: {
@@ -37,10 +37,11 @@ export default {
                         },
                     },
                     label: {
-                        refX: 35,
-                        refY: 10,
+                        refX: radius / 2,
+                        refY: radius / 10,
                         text: label,
                         stroke: labelColor,
+                        fontSize: radius / 2,
                     },
                 },
             });
@@ -48,8 +49,8 @@ export default {
             return circle;
         };
 
-        Vue.prototype.roughBox = (width, height, text) => {
-            const color = '#fff4b5';
+        Vue.prototype.roughBox = (width, height) => {
+            const color = '#ededed';
 
             const box = RoughElement.create('rectangle').prop({
                 size: { width, height },
@@ -57,24 +58,14 @@ export default {
                 attrs: {
                     body: {
                         rough: {
-                            hachureAngle: 60,
-                            hachureGap: 10,
-                            fillStyle: 'zigzag-line',
+                            hachureAngle: 0,
+                            hachureGap: 0,
+                            fillStyle: 'solid',
                         },
                         fill: color,
                         stroke: color,
                     },
-                    border: {
-                        rough: {
-                            hachureAngle: 60,
-                            hachureGap: 8,
-                        },
-                    },
-                    label: {
-                        refX: 50,
-                        refY: 10,
-                        text,
-                    },
+                    border: false,
                 },
             });
             box.set('movable', false);

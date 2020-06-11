@@ -4,11 +4,11 @@
         "drawGrid": false
     },
     "availableElements": {
-        "distance": 80,
-        "xOffset": 15,
-        "yOffset": 100,
+        "distance": 10,
+        "xOffset": 20,
+        "yOffset": 20,
         "boxWidth": 100,
-        "boxHeight": "vh",
+        "boxHeight": 100,
         "boxText": "Elements"
     },
     "link": {

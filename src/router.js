@@ -3,8 +3,9 @@ import Router from 'vue-router';
 
 import LoginForm from './components/LoginForm.vue';
 import ListMolecules from './components/ListMolecules.vue';
-import Game from './components/Game.vue';
+import GameLevel from './components/GameLevel.vue';
 import AddElements from './components/AddElements.vue';
+import Canvas from './components/Canvas.vue';
 
 Vue.use(Router);
 
@@ -23,12 +24,17 @@ export default new Router({
         {
             path: '/game/:formula',
             name: 'Game',
-            component: Game,
+            component: GameLevel,
         },
         {
             path: '/elements',
             name: 'Elements',
             component: AddElements,
+        },
+        {
+            path: '/canvas',
+            name: 'Canvas',
+            component: Canvas,
         },
     ],
 });
