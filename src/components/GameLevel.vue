@@ -45,6 +45,7 @@ export default Vue.extend({
             name: null,
             formula: null,
             paperHolderId: 'paper-container',
+            radius: 70,
         };
     },
     methods: {
@@ -83,8 +84,7 @@ export default Vue.extend({
         addAvailableElement(element, i, count) {
             // Creates the element
 
-            let radius = 70;
-            const offsetPerElement = () => radius + this.config.availableElements.distance;
+            const offsetPerElement = () => this.radius + this.config.availableElements.distance;
 
             const width = document.getElementById('paper-container').clientWidth;
             const { xOffset } = this.config.availableElements;
@@ -92,7 +92,7 @@ export default Vue.extend({
                 const elementsTotalWidth = count * offsetPerElement() + xOffset;
 
                 if (width < elementsTotalWidth) {
-                    radius -= 5;
+                    this.radius -= 5;
                     calculateRadius();
                 } else {
                     return;
@@ -101,9 +101,7 @@ export default Vue.extend({
 
             calculateRadius();
 
-            console.log(radius);
-
-            const el = this.roughCircle(radius, element.sign, element.bgColor, element.labelColor);
+            const el = this.roughCircle(this.radius, element.sign, element.bgColor, element.labelColor);
 
             // Sets it position {x, y}
             el.position(i * offsetPerElement() + this.config.availableElements.xOffset, this.config.availableElements.yOffset);
@@ -138,13 +136,43 @@ export default Vue.extend({
             const data = this.graph.toJSON();
             const parsedData = parseGraph(data);
 
+            console.log({ formula: this.formula, solution: parsedData });
+
             const result = await this.$http.post(`${this.$url}/api/molecule/check`, { formula: this.formula, solution: parsedData });
 
             console.log(result);
 
             if (result.status === 200) {
                 const isCorrect = result.data.data.correct;
+                this.fireSwal(isCorrect);
                 console.log(isCorrect);
+            }
+        },
+        fireSwal(isCorrect) {
+            if (isCorrect) {
+                this.$swal({
+                    title: 'Good job!',
+                    text: 'You have entered the correct solution! Congratulations!',
+                    icon: 'success',
+                    confirmButtonText: 'Next Level',
+                    showCancelButton: true,
+                    cancelButtonText: 'Stay',
+                    cancelButtonColor: '#fff',
+                    reverseButtons: true,
+                    heightAuto: false,
+                    customClass: {
+                        cancelButton: 'cancel-button',
+                    },
+                });
+            } else {
+                this.$swal({
+                    title: 'Not quite!',
+                    text: 'Your solution is not yet correct! Keep trying!',
+                    icon: 'error',
+                    confirmButtonText: 'Try again',
+                    confirmButtonColor: '#bf1313',
+                    heightAuto: false,
+                });
             }
         },
     },
@@ -186,5 +214,9 @@ h3 {
 .flex-col:nth-child(1) {
     flex-grow: 4;
     height: 100%;
+}
+
+.cancel-button {
+    color: rgb(131, 131, 131) !important;
 }
 </style>

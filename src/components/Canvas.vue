@@ -66,14 +66,15 @@ export default {
             let selectedModelPosition;
             const highlightOptions = {
                 highlighter: {
-                    name: 'stroke',
+                    name: 'addClass',
                     options: {
-                        rx: 10000,
-                        ry: 10000,
-                        attrs: {
-                            'stroke-width': 3,
-                            stroke: '#7ae0ff',
-                        },
+                        className: 'highlighted-cell',
+                        // rx: 10000,
+                        // ry: 10000,
+                        // attrs: {
+                        //     'stroke-width': 3,
+                        //     stroke: '#7ae0ff',
+                        // },
                     },
                 },
             };
@@ -188,8 +189,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .paper {
     font-family: Ensimmainen, fantasy;
+}
+
+.highlighted-cell {
+    outline: 20px;
+    opacity: 0.9;
+    stroke: rgb(82, 200, 255);
+    stroke-width: 10px;
 }
 </style>

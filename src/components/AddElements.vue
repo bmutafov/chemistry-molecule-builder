@@ -1,98 +1,74 @@
 <template>
     <div>
-        {{ message }}
-        <h3>Add element</h3>
-        <form id="login" @submit.prevent="submit">
-            <InputField
-                label="Name"
-                type="text"
-                name="name"
-                placeholder=""
-                v-model="name"
-                class="mrt-1"
-            />
-            <InputField
-                label="Sign"
-                type="text"
-                name="sign"
-                placeholder=""
-                v-model="sign"
-                class="mrt-1"
-            />
-            <InputField
-                label="Background Color"
-                type="text"
-                name="bgColor"
-                placeholder=""
-                v-model="bgColor"
-                class="mrt-1"
-            />
-            <InputField
-                label="Label Color"
-                type="text"
-                name="labelColor"
-                placeholder=""
-                v-model="labelColor"
-                class="mrt-1"
-            />
-            <Button class="mrt-1">Add</Button>
-        </form>
+        <Navigation />
+        <div class="boxes">
+            <div class="box">
+                {{ message }}
+                <h3>Add element</h3>
+                <form id="login" @submit.prevent="submit">
+                    <InputField label="Name" type="text" name="name" placeholder="" v-model="name" class="mrt-1" />
+                    <InputField label="Sign" type="text" name="sign" placeholder="" v-model="sign" class="mrt-1" />
+                    <InputField label="Background Color" type="text" name="bgColor" placeholder="" v-model="bgColor" class="mrt-1" />
+                    <InputField label="Label Color" type="text" name="labelColor" placeholder="" v-model="labelColor" class="mrt-1" />
+                    <Button class="mrt-1">Add</Button>
+                </form>
+            </div>
 
-        <h3>Existing elements:</h3>
-        <div class="existing">
-            <li v-for="element in elements" :key="element.sign" class="mrt-1">
-                <b>{{ element.name }}</b>
-                ( {{ element.sign }} )
-                <img
-                    src="https://img.icons8.com/flat_round/16/000000/delete-sign.png"
-                    v-on:click="remove(element._id)"
-                    class="remove-butt"
-                />
-            </li>
+            <div class="box">
+                <h3>Existing elements</h3>
+                <div class="existing">
+                    <li v-for="element in elements" :key="element.sign" class="mrt-1">
+                        <span>
+                            <b>{{ element.name }}</b>
+                            ( {{ element.sign }} )
+                        </span>
+                        <img src="https://img.icons8.com/flat_round/25/000000/delete-sign.png" v-on:click="remove(element._id)" class="remove-butt" />
+                    </li>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import InputField from "./InputField.vue";
-import Button from "./Button.vue";
+import Vue from 'vue';
+import InputField from './InputField.vue';
+import Button from './Button.vue';
+import Navigation from './Navigation.vue';
 
 export default Vue.extend({
     components: {
         InputField,
-        Button
+        Button,
+        Navigation,
     },
     data() {
         return {
             elements: [],
-            message: "",
-            name: "",
-            sign: "",
-            bgColor: "",
-            labelColor: ""
+            message: '',
+            name: '',
+            sign: '',
+            bgColor: '',
+            labelColor: '',
         };
     },
     methods: {
         async remove(id) {
-            const result = await this.$http.delete(
-                `${this.$url}/api/element/${id}`,
-                {
-                    headers: { "auth-token": this.$cookies.get("auth-token") }
-                }
-            );
+            const result = await this.$http.delete(`${this.$url}/api/element/${id}`, {
+                headers: { 'auth-token': this.$cookies.get('auth-token') },
+            });
 
-            if (result.status >= 400) console.error("erorr", result);
+            if (result.status >= 400) console.error('erorr', result);
             else this.elements = this.elements.filter(e => e._id !== id);
         },
         loggedInCookie() {
-            return this.$cookies.get("auth-token") || false;
+            return this.$cookies.get('auth-token') || false;
         },
         async retrieveData() {
             if (!this.loggedInCookie()) return false;
 
             const result = await this.$http.get(`${this.$url}/api/element`, {
-                headers: { "auth-token": this.$cookies.get("auth-token") }
+                headers: { 'auth-token': this.$cookies.get('auth-token') },
             });
             if (result.status >= 400) return false;
 
@@ -108,27 +84,27 @@ export default Vue.extend({
                     name,
                     sign,
                     bgColor,
-                    labelColor
+                    labelColor,
                 },
-                { headers: { "auth-token": this.$cookies.get("auth-token") } }
+                { headers: { 'auth-token': this.$cookies.get('auth-token') } }
             );
             if (result.code > 400) {
-                this.message = "Error, please try again";
+                this.message = 'Error, please try again';
             } else {
                 this.elements.push(result.data.data);
-                this.message = "Element added!";
+                this.message = 'Element added!';
             }
-        }
+        },
     },
     async beforeMount() {
         const data = await this.retrieveData();
         if (!data) {
-            this.$router.push("/login");
+            this.$router.push('/login');
             return;
         }
         console.log(data);
         this.elements = data;
-    }
+    },
 });
 </script>
 
@@ -136,7 +112,7 @@ export default Vue.extend({
 .existing {
     width: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     list-style-type: none;
 }
 
@@ -147,6 +123,7 @@ export default Vue.extend({
     box-shadow: 0px 2px 2px #cfcfcf;
     margin-left: 5px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 .mrt-1 {
@@ -156,5 +133,25 @@ export default Vue.extend({
 .remove-butt {
     cursor: pointer;
     margin-left: 5px;
+}
+
+.remove-butt:hover {
+    filter: contrast(200%);
+}
+
+.boxes {
+    display: flex;
+    flex-direction: row;
+    width: 1100px;
+    margin: 20px auto;
+}
+
+.box {
+    background: rgb(243, 243, 243);
+    width: 500px;
+    margin: 0 auto;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 15px;
 }
 </style>
