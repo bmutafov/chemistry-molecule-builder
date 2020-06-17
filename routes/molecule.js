@@ -43,8 +43,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
 
     const existingMolecule = await Molecule.findById(id);
-    if (!existingMolecule)
-        return res.status(400).send(errorMessage('ID not found'));
+    if (!existingMolecule) return res.status(400).send(errorMessage('ID not found'));
 
     try {
         if (name) existingMolecule.name = name;
@@ -65,15 +64,11 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
 
     const existingMolecule = await Molecule.findById(id);
-    if (!existingMolecule)
-        return res.status(400).send(errorMessage('ID not found'));
+    if (!existingMolecule) return res.status(400).send(errorMessage('ID not found'));
 
     try {
         const result = await Molecule.deleteOne(existingMolecule);
-        if (result.deletedCount > 0)
-            return res
-                .status(200)
-                .send({ error: false, data: result.deletedCount });
+        if (result.deletedCount > 0) return res.status(200).send({ error: false, data: result.deletedCount });
         else throw Error(result);
     } catch (error) {
         return res.status(400).send(error);
@@ -82,6 +77,9 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
 // Checks if a solution is correct
 router.post('/check', async (req, res) => {
+    const { formula, solution } = req.body;
+
+    try {
         const molecule = await Molecule.findOne({ formula });
 
         const byLengthAndElement = (a, b) => {
@@ -109,7 +107,7 @@ router.post('/check', async (req, res) => {
         const correct = isArrayEqual(solution, molecule.solution) && molecule.solution.length === solution.length;
         return res.status(200).send({ error: false, data: { correct } });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return res.status(500).send({ error: true, data: { correct: false } });
     }
 });
