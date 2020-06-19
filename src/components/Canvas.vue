@@ -53,7 +53,19 @@ export default {
         isMoveMode() {
             return this.action === "move";
         },
+        isLowWidth() {
+            return window.innerWidth < 1024;
+        },
         getHighlightOptions() {
+            if (this.isLowWidth())
+                return {
+                    highlighter: {
+                        name: "addClass",
+                        options: {
+                            className: ``
+                        }
+                    }
+                };
             return {
                 highlighter: {
                     name: "addClass",
@@ -85,11 +97,15 @@ export default {
                     name: "boundary"
                 },
                 allowLink: linkView => {
-                    const { source, target } = linkView.model.attributes;
-                    const validTarget = graph
-                        .getCell(target.id)
-                        .get("deleteable");
-                    return source.anchor && target.anchor && validTarget;
+                    try {
+                        const { source, target } = linkView.model.attributes;
+                        const validTarget = graph
+                            .getCell(target.id)
+                            .get("deleteable");
+                        return source.anchor && target.anchor && validTarget;
+                    } catch (e) {
+                        return false;
+                    }
                 },
                 validateMagnet: validateMagnet,
                 defaultLink: function() {
@@ -115,6 +131,7 @@ export default {
             let selectedModelPosition;
             const getHighlightOptions = this.getHighlightOptions;
             const isDeleteMode = this.isDeleteMode;
+            const isLowWidth = this.isLowWidth;
 
             window.addEventListener(
                 "resize",
@@ -169,6 +186,7 @@ export default {
                     }
                 },
                 "element:mouseenter": function(elementView) {
+                    if (isLowWidth()) return;
                     if (elementView.model.get("movable")) {
                         elementView.highlight(null, getHighlightOptions());
                     }
@@ -238,7 +256,8 @@ export default {
                     roughness: 1,
                     seed: 18786,
                     strokeWidth: 2,
-                    disableMultiStroke: true
+                    disableMultiStroke: true,
+                    stroke: "#d1d1d1"
                 }
             );
             this.paper.svg.appendChild(borderEl);
@@ -267,6 +286,7 @@ export default {
 <style>
 .paper {
     font-family: Ensimmainen, fantasy;
+    width: 600px;
 }
 
 .highlighted-cell {
@@ -295,8 +315,8 @@ export default {
 
 .switch-container {
     position: absolute;
-    top: 110px;
-    right: 5px;
+    top: 120px;
+    left: 15px;
     height: 50px;
     display: flex;
     flex-direction: row;

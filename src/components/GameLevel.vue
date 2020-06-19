@@ -1,15 +1,33 @@
 <template>
-    <div style="height: 100%">
-        <CssLoader v-if="loading" />
-        <div class="flex-col" v-else>
-            <div class="instructions">
-                <h3 class="fancy">Compose the molecule of {{ name }} ({{ formula }})</h3>
-            </div>
-            <div id="paper-container">
-                <Canvas :background="background" :paperHolderId="paperHolderId" v-on:init="setupGraph" v-on:addAvailableElement="addAvailableElement" v-bind:color="color" />
-            </div>
-            <div style="padding: 20px">
-                <DoneButton @submit="submit" />
+    <div class="page">
+        <div class="col">
+            <CssLoader v-if="!molecules" />
+            <ul v-else>
+                <div class="instructions">
+                    <h3 class="fancy">Levels</h3>
+                </div>
+                <a v-for="molecule in molecules" :key="molecule.formula" :href="`#/game/${molecule.formula}`">
+                    <li :class="formula === molecule.formula ? 'active': ''"> 
+                        <img src="https://image.flaticon.com/icons/png/512/883/883026.png" /> 
+                        {{ molecule.formula }}
+                        <b>{{ molecule.name }}</b>
+                    </li>
+                </a>
+                <!-- <li class="active"> <img src="https://image.flaticon.com/icons/png/512/883/883026.png" /> C6H6</li> -->
+            </ul>
+        </div>
+        <div class="col-2">
+            <CssLoader v-if="loading" />
+            <div class="flex-col" v-else>
+                <div class="instructions">
+                    <h3 class="fancy">Compose the molecule of {{ name }} ({{ formula }})</h3>
+                </div>
+                <div id="paper-container">
+                    <Canvas :background="background" :paperHolderId="paperHolderId" v-on:init="setupGraph" v-on:addAvailableElement="addAvailableElement" v-bind:color="color" />
+                </div>
+                <div style="padding: 20px">
+                    <DoneButton @submit="submit" />
+                </div>
             </div>
         </div>
     </div>
@@ -36,6 +54,12 @@ export default Vue.extend({
         DoneButton,
         CssLoader
     },
+    watch: {
+        async $route() {
+            await this.getMoleculeData();
+            await this.setupGraph(this.graph, this.paper);
+        }
+    },
     data() {
         return {
             background: {
@@ -45,7 +69,8 @@ export default Vue.extend({
             name: null,
             formula: null,
             paperHolderId: "paper-container",
-            radius: 70
+            radius: 70,
+            molecules: false
         };
     },
     methods: {
@@ -59,6 +84,11 @@ export default Vue.extend({
 
             const data = resultElements.data.data;
             return data;
+        },
+        async getAllMolecules() {
+            const result = await this.$http.get(`${this.$url}/api/molecule`);
+
+            this.molecules = result.data.data;
         },
         async getMoleculeData() {
             this.loading = true;
@@ -126,6 +156,7 @@ export default Vue.extend({
         /* Callback on the init listener from <Canvas></Canvas>*/
         async setupGraph(graph, paper) {
             this.graph = graph;
+            this.paper = paper;
             const joint = this.$joint;
             const config = this.config;
 
@@ -159,12 +190,9 @@ export default Vue.extend({
                 { formula: this.formula, solution: parsedData }
             );
 
-            console.log(result);
-
             if (result.status === 200) {
                 const isCorrect = result.data.data.correct;
                 this.fireSwal(isCorrect);
-                console.log(isCorrect);
             }
         },
         fireSwal(isCorrect) {
@@ -182,6 +210,37 @@ export default Vue.extend({
                     heightAuto: false,
                     customClass: {
                         cancelButton: "cancel-button"
+                    },
+                    showLoaderOnConfirm: true,
+                    preConfirm: async () => {
+                        return await this.$http.get(
+                            `${this.$url}/api/molecule`
+                        );
+                    },
+                    allowOutsideClick: () => !this.$swal.isLoading()
+                }).then(result => {
+                    if (result.value) {
+                        const { data } = result.value.data;
+                        // ensure same order every time
+                        data.sort((a, b) => (a.formula > b.formula ? -1 : 1));
+                        let currentIndex = data.findIndex(
+                            m => m.formula === this.formula
+                        );
+                        const nextIndex =
+                            currentIndex === data.length - 1
+                                ? 0
+                                : currentIndex + 1;
+                        console.log({
+                            currentIndex,
+                            nextIndex,
+                            go: `/game/${data[nextIndex].formula}`
+                        });
+
+                        this.$router.push({
+                            name: "Game",
+                            params: { formula: data[nextIndex].formula }
+                        });
+                        // console.log(result.value);
                     }
                 });
             } else {
@@ -197,12 +256,73 @@ export default Vue.extend({
         }
     },
     async beforeMount() {
+        await this.getAllMolecules();
         await this.getMoleculeData();
     }
 });
 </script>
 
 <style>
+a {
+    text-decoration: none;
+}
+
+.page {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.col {
+    flex: 1;
+    background: #f8f8f8;
+    margin-right: 10px;
+}
+
+.col ul {
+    list-style-type: disc;
+    padding: 0;
+    text-align: left;
+}
+
+.col ul li {
+    padding: 15px 20px;
+    background: transparent;
+    margin: 10px 5px;
+    border-radius: 7px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition: 0.2s;
+    cursor: pointer;
+    color: rgb(71, 71, 71);
+}
+
+.col ul li:hover {
+    background: #ffffff;
+}
+
+.col ul li b {
+    margin-left: 10px;
+    font-size: 0.8rem;
+}
+
+.col ul li > img {
+    width: 34px;
+    height: 34px;
+    margin-right: 20px;
+}
+
+.col ul li.active {
+    background: #ffffff;
+    color: #c0c0c0;
+    cursor: default;
+}
+
+.col-2 {
+    flex: 4;
+}
+
 .unmovable-cell {
     cursor: default !important;
 }
@@ -212,13 +332,20 @@ export default Vue.extend({
     height: 100%;
 }
 
+@media screen and (max-width: 864px) {
+    .page {
+        flex-direction: column;
+    }
+    #paper-container {
+        min-height: 800px;
+    }
+}
 .fancy {
     font-family: Ensimmainen, fantasy;
 }
 
 .instructions {
-    margin: 0;
-    margin: 10px 0;
+    margin: 10px 10px;
 }
 
 h3 {
@@ -229,6 +356,8 @@ h3 {
 .flex-col {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    justify-content: flex-start;
 }
 
 .flex-col:nth-child(1) {

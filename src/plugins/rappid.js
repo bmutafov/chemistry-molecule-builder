@@ -58,9 +58,9 @@ export default {
                 attrs: {
                     body: {
                         rough: {
-                            hachureAngle: 0,
-                            hachureGap: 0,
-                            fillStyle: 'solid',
+                            hachureAngle: 70,
+                            hachureGap: 20,
+                            fillStyle: 'cross-hatch',
                         },
                         fill: color,
                         stroke: color,
