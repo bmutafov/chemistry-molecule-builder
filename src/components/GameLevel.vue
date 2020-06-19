@@ -89,7 +89,7 @@ export default Vue.extend({
         },
         async getAllMolecules() {
             const result = await this.$http.get(`${this.$url}/api/molecule`);
-
+            result.data.data.sort((a, b) => (a.formula > b.formula ? -1 : 1));
             this.molecules = result.data.data;
         },
         async getMoleculeData() {
