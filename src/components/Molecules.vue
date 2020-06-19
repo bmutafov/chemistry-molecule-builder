@@ -1,30 +1,30 @@
 <template>
-    <div style="height: 100%">
-        <Navigation />
-        <div class="boxes">
-            <div class="box">
-                <h3>Add molecule</h3>
-                <div class="inputs">
-                    <InputField label="Molecule name" type="text" name="name" placeholder="" v-model="name" class="mrt-1" />
-                    <InputField label="Formula" type="text" name="formula" placeholder="" v-model="formula" class="mrt-1" />
-                </div>
-                <Button @click.native="submit" class="mrt-1"> Add molecule </Button>
-            </div>
-
-            <div class="box">
-                <h3>Existing molecules</h3>
-
-                <ul class="existing">
-                    <li v-for="molecule in molecules" :key="molecule.formula">
+    <div class="page">
+        <div class="col">
+            <h3 class="fancy">Navigate</h3>
+            <Navigation />
+            <h3 class="fancy">Existing molecules</h3>
+            <ul>
+                <li v-for="molecule in molecules" :key="molecule.formula">
+                    <img src="https://image.flaticon.com/icons/png/512/883/883026.png" />
+                    <span class="text-el">
                         <span>
-                            <b>{{ molecule.name }}</b> ( {{ molecule.formula }} )
+                            {{ molecule.formula }}<b>{{ molecule.name }}</b>
                         </span>
                         <img src="https://img.icons8.com/flat_round/25/000000/delete-sign.png" v-on:click="remove(molecule._id)" class="remove-butt" />
-                    </li>
-                </ul>
-            </div>
+                    </span>
+                </li>
+            </ul>
         </div>
-        <GameLevelCreator :name="name" :formula="formula" ref="gameLevelCreator" />
+        <div class="col-2">
+            <h3 class="fancy">Add molecule</h3>
+            <div class="inputs">
+                <InputField label="Molecule name" type="text" name="name" placeholder="" v-model="name" class="mrt-1" />
+                <InputField label="Formula" type="text" name="formula" placeholder="" v-model="formula" class="mrt-1" />
+            </div>
+            <GameLevelCreator :name="name" :formula="formula" ref="gameLevelCreator" />
+            <RoughButton @click.native="submit" class="mrt-1" type="success"> Add molecule </RoughButton>
+        </div>
     </div>
 </template>
 
@@ -33,7 +33,7 @@ import Vue from 'vue';
 import InputField from './InputField.vue';
 import Navigation from './Navigation.vue';
 import GameLevelCreator from './GameLevelCreator.vue';
-import Button from './Button.vue';
+import RoughButton from './RoughButton.vue';
 
 export default Vue.extend({
     name: 'ListMolecules',
@@ -42,7 +42,7 @@ export default Vue.extend({
         InputField,
         Navigation,
         GameLevelCreator,
-        Button,
+        RoughButton,
     },
     data() {
         return {
@@ -114,48 +114,47 @@ export default Vue.extend({
     margin-top: 10px;
 }
 
-.existing {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    list-style-type: none;
-    padding: 0;
+.col ul li:hover .remove-butt {
+    filter: grayscale(0);
+    opacity: 1;
 }
 
-.existing li {
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0px 2px 2px #cfcfcf;
-    margin-left: 5px;
+.text-el {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    width: 100%;
     align-items: center;
-    margin-top: 5px;
+}
+
+.text-el .text {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .remove-butt {
+    filter: grayscale(100);
     cursor: pointer;
     margin-left: 5px;
+    width: 16px;
+    height: 16px;
+    transition: 0.2 ease-in-out;
 }
 
 .remove-butt:hover {
-    filter: contrast(200%);
+    transform: scale(1.1);
 }
 
-.boxes {
+.element-preview {
+    margin: 50px auto;
+}
+
+.text-el {
     display: flex;
     flex-direction: row;
-    width: 1100px;
-    margin: 20px auto;
-}
-
-.box {
-    background: rgb(243, 243, 243);
-    width: 500px;
-    margin: 0 auto;
-    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
-    padding: 10px;
-    border-radius: 15px;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
 }
 </style>

@@ -1,8 +1,14 @@
 <template>
-    <div style="height: 100%">
+    <div>
         <div class="flex-col">
             <div class="instructions">
-                <h3 class="fancy">Compose the molecule of {{ name }} ({{ formula }})</h3>
+                <h3 class="fancy">
+                    Draw
+                    <div class="molecule">
+                        {{ name }} <span class="formula">{{ formula }}</span>
+                    </div>
+                    's molecule
+                </h3>
             </div>
             <div id="paper-container">
                 <Canvas :paperHolderId="paperHolderId" v-on:init="setupGraph" v-on:addAvailableElement="addAvailableElement" />
@@ -87,7 +93,7 @@ export default Vue.extend({
             const config = this.config;
 
             // Creates the element holder box
-            const box = this.roughBox(document.getElementById('paper-container').clientWidth, config.availableElements.boxHeight, config.availableElements.boxText);
+            const box = this.roughBox(document.getElementById('paper-container').clientWidth * 4, config.availableElements.boxHeight, config.availableElements.boxText);
 
             graph.addCells(box);
 
@@ -103,4 +109,8 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+#paper-container {
+    height: 800px;
+}
+</style>
