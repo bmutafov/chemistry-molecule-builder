@@ -31,4 +31,21 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 });
 
+router.delete('/:id', authMiddleware, async (req, res) => {
+    const { id } = req.params;
+
+    console.log(id);
+
+    const existingElement = await Element.findById(id);
+    if (!existingElement) return res.status(400).send(errorMessage('ID not found'));
+
+    try {
+        const result = await Element.deleteOne(existingElement);
+        if (result.deletedCount > 0) return res.status(200).send({ error: false, data: result.deletedCount });
+        else throw Error(result);
+    } catch (error) {
+        return res.status(500).send(error);
+    }
+});
+
 module.exports = router;
