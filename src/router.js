@@ -2,10 +2,9 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import LoginForm from './components/LoginForm.vue';
-import ListMolecules from './components/ListMolecules.vue';
+import Molecules from './components/Molecules.vue';
 import GameLevel from './components/GameLevel.vue';
-import AddElements from './components/AddElements.vue';
-import Canvas from './components/Canvas.vue';
+import Elements from './components/Elements.vue';
 
 Vue.use(Router);
 
@@ -14,7 +13,7 @@ export default new Router({
         {
             path: '/',
             name: 'Home',
-            component: ListMolecules,
+            component: Molecules,
         },
         {
             path: '/login',
@@ -29,12 +28,7 @@ export default new Router({
         {
             path: '/elements',
             name: 'Elements',
-            component: AddElements,
-        },
-        {
-            path: '/canvas',
-            name: 'Canvas',
-            component: Canvas,
+            component: Elements,
         },
     ],
 });
