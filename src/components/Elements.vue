@@ -30,24 +30,31 @@
                     <div class="col-2" style="margin-right: 10px">
                         <h3 class="fancy">Add new element</h3>
                         <form id="login" @submit.prevent="submit">
-                            <InputField label="Name" type="text" name="name" placeholder="" v-model="name" class="mrt-1" />
-                            <InputField label="Sign" type="text" name="sign" placeholder="" v-model="sign" class="mrt-1" />
-                            <div style="display: flex; flex-direction: row" class="mrt-1">
-                                <InputField label="Background Color" type="text" name="bgColor" placeholder="" v-model="bgColor.hex" style="flex: 4; margin-right: 10px" />
-                                <compact-picker v-model="bgColor" />
-                            </div>
-                            <div style="display: flex; flex-direction: row" class="mrt-1">
-                                <InputField label="Label Color" type="text" name="labelColor" placeholder="" v-model="labelColor.hex" style="flex: 4; margin-right: 10px" />
-                                <compact-picker v-model="labelColor" />
+                            <div style="display: flex; flex-direction: row">
+                                <div style="display: flex; flex-direction: column; flex: 1; margin-left: 20px;" class="mrt-1">
+                                    <span class="mrt-1 mrb-1">Background Color</span>
+                                    <!-- <InputField label="Background Color" type="text" name="bgColor" placeholder="" v-model="bgColor.hex" style="flex: 4; margin-right: 10px" /> -->
+                                    <Chrome-picker v-model="bgColor" />
+                                </div>
+                                <div style="display: flex; flex-direction: column; margin-left: 20px; flex: 1" class="mrt-1">
+                                    <span class="mrt-1 mrb-1">Label Color</span>
+                                    <!-- <InputField label="Label Color" type="text" name="labelColor" placeholder="" v-model="labelColor.hex" style="flex: 4; margin-right: 10px" /> -->
+                                    <Chrome-picker v-model="labelColor" />
+                                </div>
+                                <div style="display: flex; flex-direction: column; flex: 3; margin-left: 20px;" class="mrt-1">
+                                    <InputField label="Name" type="text" name="name" placeholder="" v-model="name" class="mrt-1" />
+                                    <InputField label="Sign" type="text" name="sign" placeholder="" v-model="sign" class="mrt-1" />
+                                    <RoughButton class="mrt-1" type="success"> Add element </RoughButton>
+                                </div>
                             </div>
                             <!-- <compact-picker v-model="bgColor" />
                             <compact-picker v-model="labelColor" /> -->
-                            <RoughButton class="mrt-1" type="success"> Add element </RoughButton>
                         </form>
                     </div>
                     <div class="col">
                         <h3 class="fancy" style="margin-left: 10px">Live preview</h3>
                         <ElementPreview :bgColor="this.bgColor.hex" :labelColor="this.labelColor.hex" :scale="3" class="element-preview">{{ this.sign }}</ElementPreview>
+                        <div class="preview-name">{{ name }}</div>
                     </div>
                 </div>
             </div>
@@ -61,7 +68,7 @@ import InputField from './InputField.vue';
 import RoughButton from './RoughButton.vue';
 import Navigation from './Navigation.vue';
 import ElementPreview from './ElementPreview.vue';
-import { Compact } from 'vue-color';
+import { Chrome } from 'vue-color';
 
 export default Vue.extend({
     components: {
@@ -69,15 +76,15 @@ export default Vue.extend({
         RoughButton,
         Navigation,
         ElementPreview,
-        'compact-picker': Compact,
+        'Chrome-picker': Chrome,
     },
     data() {
         return {
             elements: [],
             message: '',
-            name: '',
-            sign: '',
-            bgColor: { hex: '#F44E3B' },
+            name: 'Element',
+            sign: 'E',
+            bgColor: { hex: '#55FFBE' },
             labelColor: { hex: '#333333' },
             colors: '#000000',
         };
@@ -142,6 +149,10 @@ export default Vue.extend({
     margin-top: 10px;
 }
 
+.mrb-1 {
+    margin-bottom: 10px;
+}
+
 .col ul li:hover .remove-butt {
     filter: grayscale(0);
     opacity: 1;
@@ -176,5 +187,13 @@ export default Vue.extend({
 
 .element-preview {
     margin: 50px auto;
+}
+
+.preview-name {
+    display: flex;
+    justify-content: center;
+    margin-top: 60px;
+    font-size: 2rem;
+    font-weight: 700;
 }
 </style>
