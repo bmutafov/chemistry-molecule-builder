@@ -1,29 +1,54 @@
 <template>
-    <div>
-        <Navigation />
-        <div class="boxes">
-            <div class="box">
-                {{ message }}
-                <h3>Add element</h3>
-                <form id="login" @submit.prevent="submit">
-                    <InputField label="Name" type="text" name="name" placeholder="" v-model="name" class="mrt-1" />
-                    <InputField label="Sign" type="text" name="sign" placeholder="" v-model="sign" class="mrt-1" />
-                    <InputField label="Background Color" type="text" name="bgColor" placeholder="" v-model="bgColor" class="mrt-1" />
-                    <InputField label="Label Color" type="text" name="labelColor" placeholder="" v-model="labelColor" class="mrt-1" />
-                    <Button class="mrt-1">Add</Button>
-                </form>
+    <div style="height: 100%">
+        <div class="page">
+            <div class="col">
+                <div class="instructions">
+                    <h3 class="fancy">Navigate</h3>
+                </div>
+                <Navigation />
+                <CssLoader v-if="!elements" />
+                <div v-else>
+                    <div class="instructions">
+                        <h3 class="fancy">Existing elements</h3>
+                    </div>
+                    <ul>
+                        <li v-for="element in elements" :key="element.sign">
+                            <!-- <img src="https://image.flaticon.com/icons/svg/341/341531.svg" /> -->
+                            <span class="text-el">
+                                <span class="text">
+                                    <ElementPreview :bgColor="element.bgColor" :labelColor="element.labelColor">{{ element.sign }}</ElementPreview>
+                                    <b>{{ element.name }}</b>
+                                </span>
+                                <img src="https://img.icons8.com/flat_round/52/000000/delete-sign.png" v-on:click="remove(element._id)" class="remove-butt" />
+                            </span>
+                        </li>
+                    </ul>
+                </div>
             </div>
-
-            <div class="box">
-                <h3>Existing elements</h3>
-                <div class="existing">
-                    <li v-for="element in elements" :key="element.sign" class="mrt-1">
-                        <span>
-                            <b>{{ element.name }}</b>
-                            ( {{ element.sign }} )
-                        </span>
-                        <img src="https://img.icons8.com/flat_round/25/000000/delete-sign.png" v-on:click="remove(element._id)" class="remove-butt" />
-                    </li>
+            <div class="col-2">
+                <div class="page">
+                    <div class="col-2" style="margin-right: 10px">
+                        <h3 class="fancy">Add new element</h3>
+                        <form id="login" @submit.prevent="submit">
+                            <InputField label="Name" type="text" name="name" placeholder="" v-model="name" class="mrt-1" />
+                            <InputField label="Sign" type="text" name="sign" placeholder="" v-model="sign" class="mrt-1" />
+                            <div style="display: flex; flex-direction: row" class="mrt-1">
+                                <InputField label="Background Color" type="text" name="bgColor" placeholder="" v-model="bgColor.hex" style="flex: 4; margin-right: 10px" />
+                                <compact-picker v-model="bgColor" />
+                            </div>
+                            <div style="display: flex; flex-direction: row" class="mrt-1">
+                                <InputField label="Label Color" type="text" name="labelColor" placeholder="" v-model="labelColor.hex" style="flex: 4; margin-right: 10px" />
+                                <compact-picker v-model="labelColor" />
+                            </div>
+                            <!-- <compact-picker v-model="bgColor" />
+                            <compact-picker v-model="labelColor" /> -->
+                            <RoughButton class="mrt-1" type="success"> Add element </RoughButton>
+                        </form>
+                    </div>
+                    <div class="col">
+                        <h3 class="fancy" style="margin-left: 10px">Live preview</h3>
+                        <ElementPreview :bgColor="this.bgColor.hex" :labelColor="this.labelColor.hex" :scale="3" class="element-preview">{{ this.sign }}</ElementPreview>
+                    </div>
                 </div>
             </div>
         </div>
@@ -33,14 +58,18 @@
 <script lang="ts">
 import Vue from 'vue';
 import InputField from './InputField.vue';
-import Button from './Button.vue';
+import RoughButton from './RoughButton.vue';
 import Navigation from './Navigation.vue';
+import ElementPreview from './ElementPreview.vue';
+import { Compact } from 'vue-color';
 
 export default Vue.extend({
     components: {
         InputField,
-        Button,
+        RoughButton,
         Navigation,
+        ElementPreview,
+        'compact-picker': Compact,
     },
     data() {
         return {
@@ -48,8 +77,9 @@ export default Vue.extend({
             message: '',
             name: '',
             sign: '',
-            bgColor: '',
-            labelColor: '',
+            bgColor: { hex: '#F44E3B' },
+            labelColor: { hex: '#333333' },
+            colors: '#000000',
         };
     },
     methods: {
@@ -83,8 +113,8 @@ export default Vue.extend({
                 {
                     name,
                     sign,
-                    bgColor,
-                    labelColor,
+                    bgColor: bgColor.hex,
+                    labelColor: labelColor.hex,
                 },
                 { headers: { 'auth-token': this.$cookies.get('auth-token') } }
             );
@@ -109,49 +139,43 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.existing {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    list-style-type: none;
-}
-
-.existing li {
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0px 2px 2px #cfcfcf;
-    margin-left: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
 .mrt-1 {
     margin-top: 10px;
 }
 
+.col ul li:hover .remove-butt {
+    filter: grayscale(0);
+    opacity: 1;
+}
+
+.text-el {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+
+.text-el .text {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .remove-butt {
+    filter: grayscale(100);
     cursor: pointer;
     margin-left: 5px;
+    width: 16px;
+    height: 16px;
+    transition: 0.2 ease-in-out;
 }
 
 .remove-butt:hover {
-    filter: contrast(200%);
+    transform: scale(1.1);
 }
 
-.boxes {
-    display: flex;
-    flex-direction: row;
-    width: 1100px;
-    margin: 20px auto;
-}
-
-.box {
-    background: rgb(243, 243, 243);
-    width: 500px;
-    margin: 0 auto;
-    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
-    padding: 10px;
-    border-radius: 15px;
+.element-preview {
+    margin: 50px auto;
 }
 </style>

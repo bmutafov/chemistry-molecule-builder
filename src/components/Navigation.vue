@@ -1,10 +1,10 @@
 <template>
-    <nav>
-        <router-link to="/">Molecules</router-link>
-        <router-link to="/elements">Elements</router-link>
+    <ul>
+        <li><img src="https://image.flaticon.com/icons/png/512/883/883026.png" /><router-link to="/">Molecules</router-link></li>
+        <li><img src="https://image.flaticon.com/icons/svg/341/341531.svg" /><router-link to="/elements"> Elements</router-link></li>
         <!-- <router-link to="/login">Login</router-link> -->
-        <router-link to="/game/H2O">Game</router-link>
-    </nav>
+        <li><img src="https://image.flaticon.com/icons/svg/3079/3079017.svg" /><router-link to="/game/H2O">Game</router-link></li>
+    </ul>
 </template>
 
 <script lang="ts">
@@ -15,20 +15,8 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-nav {
-    margin-top: 30px;
-}
-nav a {
-    text-decoration: none;
-    color: #ffffff;
-    background: #5f91ff;
-    box-shadow: 0px 2px 2px #cfcfcf;
-    padding: 15px;
-    border-radius: 10px;
-    margin: 5px;
-}
-
-nav a:hover {
-    background: #4d85fd;
+a {
+    color: #222;
+    font-weight: 600;
 }
 </style>

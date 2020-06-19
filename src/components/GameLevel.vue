@@ -13,7 +13,6 @@
                         <b>{{ molecule.name }}</b>
                     </li>
                 </a>
-                <!-- <li class="active"> <img src="https://image.flaticon.com/icons/png/512/883/883026.png" /> C6H6</li> -->
             </ul>
         </div>
         <div class="col-2">
