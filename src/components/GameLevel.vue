@@ -16,36 +16,36 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Canvas from './Canvas.vue';
-import DoneButton from './DoneButton.vue';
-import CssLoader from './CssLoader.vue';
-import parseGraph from '../utils/graph-parser';
+import Vue from "vue";
+import Canvas from "./Canvas.vue";
+import DoneButton from "./DoneButton.vue";
+import CssLoader from "./CssLoader.vue";
+import parseGraph from "../utils/graph-parser";
 
 export default Vue.extend({
-    name: 'GameLevel',
+    name: "GameLevel",
     props: {
         elementsLink: {
-            type: String,
+            type: String
         },
         onSubmit: Function,
-        color: String,
+        color: String
     },
     components: {
         Canvas,
         DoneButton,
-        CssLoader,
+        CssLoader
     },
     data() {
         return {
             background: {
-                color: 'white',
+                color: "white"
             },
             loading: true,
             name: null,
             formula: null,
-            paperHolderId: 'paper-container',
-            radius: 70,
+            paperHolderId: "paper-container",
+            radius: 70
         };
     },
     methods: {
@@ -84,9 +84,11 @@ export default Vue.extend({
         addAvailableElement(element, i, count) {
             // Creates the element
 
-            const offsetPerElement = () => this.radius + this.config.availableElements.distance;
+            const offsetPerElement = () =>
+                this.radius + this.config.availableElements.distance;
 
-            const width = document.getElementById('paper-container').clientWidth;
+            const width = document.getElementById("paper-container")
+                .clientWidth;
             const { xOffset } = this.config.availableElements;
             function calculateRadius() {
                 const elementsTotalWidth = count * offsetPerElement() + xOffset;
@@ -101,14 +103,22 @@ export default Vue.extend({
 
             calculateRadius();
 
-            const el = this.roughCircle(this.radius, element.sign, element.bgColor, element.labelColor);
+            const el = this.roughCircle(
+                this.radius,
+                element.sign,
+                element.bgColor,
+                element.labelColor
+            );
 
             // Sets it position {x, y}
-            el.position(i * offsetPerElement() + this.config.availableElements.xOffset, this.config.availableElements.yOffset);
+            el.position(
+                i * offsetPerElement() + this.config.availableElements.xOffset,
+                this.config.availableElements.yOffset
+            );
 
             // Set it to be non-deleteable and attach its information
-            el.set('deleteable', false);
-            el.set('nodeInfo', { element, i });
+            el.set("deleteable", false);
+            el.set("nodeInfo", { element, i });
 
             // Add the elements to the graph
             this.graph.addCells(el);
@@ -120,16 +130,22 @@ export default Vue.extend({
             const config = this.config;
 
             // Creates the element holder box
-            const box = this.roughBox(document.getElementById('paper-container').clientWidth, config.availableElements.boxHeight, config.availableElements.boxText);
+            const box = this.roughBox(
+                document.getElementById("paper-container").clientWidth * 10,
+                config.availableElements.boxHeight,
+                config.availableElements.boxText
+            );
 
             graph.addCells(box);
 
             // Fetches and renders the lements
             const data = await this.getElementsForRender();
-            data.forEach((element, i) => this.addAvailableElement(element, i, data.length));
+            data.forEach((element, i) =>
+                this.addAvailableElement(element, i, data.length)
+            );
 
             // Adds .unmovable-cell class to the holder box to attach custom styles
-            joint.V(paper.findViewByModel(box).el).addClass('unmovable-cell');
+            joint.V(paper.findViewByModel(box).el).addClass("unmovable-cell");
         },
         /* On submit handler */
         async submit() {
@@ -138,7 +154,10 @@ export default Vue.extend({
 
             console.log({ formula: this.formula, solution: parsedData });
 
-            const result = await this.$http.post(`${this.$url}/api/molecule/check`, { formula: this.formula, solution: parsedData });
+            const result = await this.$http.post(
+                `${this.$url}/api/molecule/check`,
+                { formula: this.formula, solution: parsedData }
+            );
 
             console.log(result);
 
@@ -151,34 +170,35 @@ export default Vue.extend({
         fireSwal(isCorrect) {
             if (isCorrect) {
                 this.$swal({
-                    title: 'Good job!',
-                    text: 'You have entered the correct solution! Congratulations!',
-                    icon: 'success',
-                    confirmButtonText: 'Next Level',
+                    title: "Good job!",
+                    text:
+                        "You have entered the correct solution! Congratulations!",
+                    icon: "success",
+                    confirmButtonText: "Next Level",
                     showCancelButton: true,
-                    cancelButtonText: 'Stay',
-                    cancelButtonColor: '#fff',
+                    cancelButtonText: "Stay",
+                    cancelButtonColor: "#fff",
                     reverseButtons: true,
                     heightAuto: false,
                     customClass: {
-                        cancelButton: 'cancel-button',
-                    },
+                        cancelButton: "cancel-button"
+                    }
                 });
             } else {
                 this.$swal({
-                    title: 'Not quite!',
-                    text: 'Your solution is not yet correct! Keep trying!',
-                    icon: 'error',
-                    confirmButtonText: 'Try again',
-                    confirmButtonColor: '#bf1313',
-                    heightAuto: false,
+                    title: "Not quite!",
+                    text: "Your solution is not yet correct! Keep trying!",
+                    icon: "error",
+                    confirmButtonText: "Try again",
+                    confirmButtonColor: "#bf1313",
+                    heightAuto: false
                 });
             }
-        },
+        }
     },
     async beforeMount() {
         await this.getMoleculeData();
-    },
+    }
 });
 </script>
 
