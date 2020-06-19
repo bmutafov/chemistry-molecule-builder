@@ -25,8 +25,10 @@
                 <div id="paper-container">
                     <Canvas :background="background" :paperHolderId="paperHolderId" v-on:init="setupGraph" v-on:addAvailableElement="addAvailableElement" v-bind:color="color" />
                 </div>
-                <div style="padding: 20px">
-                    <DoneButton @submit="submit" />
+                <div class="button-holder">
+                    <RoughButton class="button" type="warning" @submit="help"> <img src="https://image.flaticon.com/icons/svg/2476/2476190.svg" /> Help </RoughButton>
+                    <RoughButton class="button" type="error" @submit="reset"> <img src="https://image.flaticon.com/icons/svg/2039/2039083.svg" /> Reset </RoughButton>
+                    <RoughButton class="button" type="success" @submit="submit"> <img src="https://image.flaticon.com/icons/svg/1828/1828743.svg"> Submit </RoughButton>
                 </div>
             </div>
         </div>
@@ -36,7 +38,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Canvas from "./Canvas.vue";
-import DoneButton from "./DoneButton.vue";
+import RoughButton from "./RoughButton.vue";
 import CssLoader from "./CssLoader.vue";
 import parseGraph from "../utils/graph-parser";
 
@@ -51,7 +53,7 @@ export default Vue.extend({
     },
     components: {
         Canvas,
-        DoneButton,
+        RoughButton,
         CssLoader
     },
     watch: {
@@ -195,6 +197,12 @@ export default Vue.extend({
                 this.fireSwal(isCorrect);
             }
         },
+        reset() {
+            const cells = this.graph
+                .getCells()
+                .filter(c => c.get("deleteable"));
+            this.graph.removeCells(cells);
+        },
         fireSwal(isCorrect) {
             if (isCorrect) {
                 this.$swal({
@@ -253,6 +261,47 @@ export default Vue.extend({
                     heightAuto: false
                 });
             }
+        },
+        help() {
+            this.$swal
+                .mixin({
+                    confirmButtonText: "Next &rarr;",
+                    showCancelButton: true,
+                    cancelButtonText: "Close",
+                    cancelButtonColor: "#fff",
+                    customClass: {
+                        cancelButton: "cancel-button"
+                    },
+                    heightAuto: false,
+                    reverseButtons: true,
+                    progressSteps: ["1", "2", "3", "4"]
+                })
+                .queue([
+                    {
+                        title: "Controls",
+                        html:
+                            "<img src='https://i.snipboard.io/pIgTYM.jpg' /> <br /> \
+                            You can choose what action you want to perform by clicking the respective button in the action select menu!"
+                    },
+                    {
+                        title: "Moving elements",
+                        html:
+                            "<img src='https://i.imgur.com/ognkPi5.gif' /><br /> \
+                            Drag and drop to move elements. When you need new elements just take them from the elements bar!"
+                    },
+                    {
+                        title: "Creating bonds",
+                        html:
+                            "<img src='https://i.imgur.com/T61wzFy.gif' /><br /> \
+                            Choose <i>\"Connect mode\"</i> to create bonds between two elements. You can alternatively hold <b>⇧ shift</b> and left click while on move mode."
+                    },
+                    {
+                        title: "Deleting",
+                        html:
+                            "<img src='https://i.imgur.com/UR4lMoi.gif' /><br /> \
+                            Choose <i>\"Delete mode\"</i> to delete existing elements or bonds. You can alternatively hover and press the (x) button while on move or connect mode."
+                    }
+                ]);
         }
     },
     async beforeMount() {
@@ -367,5 +416,16 @@ h3 {
 
 .cancel-button {
     color: rgb(131, 131, 131) !important;
+}
+
+.button-holder {
+    display: flex;
+    align-items: center;
+    height: 100px;
+    margin-left: 10px;
+}
+
+.button {
+    margin-right: 20px;
 }
 </style>
