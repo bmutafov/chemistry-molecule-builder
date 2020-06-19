@@ -77,7 +77,6 @@ export default Vue.extend({
             if (result.status >= 400) return false;
 
             const newData = await this.retrieveData();
-            console.log(newData);
             if (newData) this.molecules = newData.molecules;
         },
         loggedInCookie() {
@@ -103,7 +102,6 @@ export default Vue.extend({
             this.$router.push('/login');
             return;
         }
-        console.log(data);
         this.molecules = data.molecules;
     },
 });

@@ -165,7 +165,6 @@ export default {
                             elementView.model.set('deleteable', true);
                             const { element, i } = elementView.model.get('nodeInfo');
                             this.$emit('addAvailableElement', element, i);
-                            console.log('addelement');
                         }
                     }
                 },
@@ -239,7 +238,6 @@ export default {
             this.border = borderEl;
         },
         changeAction(action) {
-            console.log(`Action changed to: ${action}`);
             this.action = action;
         },
     },

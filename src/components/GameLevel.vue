@@ -109,10 +109,7 @@ export default Vue.extend({
             this.formula = null;
             this.name = null;
 
-            console.log(this.$route.params.formula);
-
             const url = `${this.$url}/api/molecule/${this.$route.params.formula}`;
-            console.log(`url: ${url}`);
             try {
                 const result = await this.$http.get(url);
                 this.formula = result.data.data.formula;
@@ -120,7 +117,7 @@ export default Vue.extend({
                 this.loading = false;
                 this.error = false;
             } catch (e) {
-                console.log('error');
+                console.log(e);
                 this.error = true;
                 this.loading = false;
             }
@@ -182,8 +179,6 @@ export default Vue.extend({
             const data = this.graph.toJSON();
             const parsedData = parseGraph(data);
 
-            console.log({ formula: this.formula, solution: parsedData });
-
             const result = await this.$http.post(`${this.$url}/api/molecule/check`, { formula: this.formula, solution: parsedData });
 
             if (result.status === 200) {
@@ -222,17 +217,11 @@ export default Vue.extend({
                         data.sort((a, b) => (a.formula > b.formula ? -1 : 1));
                         let currentIndex = data.findIndex(m => m.formula === this.formula);
                         const nextIndex = currentIndex === data.length - 1 ? 0 : currentIndex + 1;
-                        console.log({
-                            currentIndex,
-                            nextIndex,
-                            go: `/game/${data[nextIndex].formula}`,
-                        });
 
                         this.$router.push({
                             name: 'Game',
                             params: { formula: data[nextIndex].formula },
                         });
-                        // console.log(result.value);
                     }
                 });
             } else {

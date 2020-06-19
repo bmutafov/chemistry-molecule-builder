@@ -45,7 +45,6 @@ export default Vue.extend({
         },
         async getElementsForRender() {
             const url = `${this.$url}/api/element`;
-            console.log(`Get: ${url}`);
             const resultElements = await this.$http.get(url, {
                 headers: { 'auth-token': this.$cookies.get('auth-token') },
             });

@@ -132,7 +132,6 @@ export default Vue.extend({
             this.$router.push('/login');
             return;
         }
-        console.log(data);
         this.elements = data;
     },
 });
