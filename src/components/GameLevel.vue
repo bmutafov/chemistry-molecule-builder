@@ -253,8 +253,8 @@ export default Vue.extend({
                 });
             } else {
                 this.$swal({
-                    title: "Not quite!",
-                    text: "Your solution is not yet correct! Keep trying!",
+                    title: "Incorrect!",
+                    text: "Your solution was incorrect. Keep trying!",
                     icon: "error",
                     confirmButtonText: "Try again",
                     confirmButtonColor: "#bf1313",
