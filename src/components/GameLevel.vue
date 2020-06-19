@@ -126,27 +126,14 @@ export default Vue.extend({
         addAvailableElement(element, i, count) {
             // Creates the element
 
-            const offsetPerElement = () => this.radius + this.config.availableElements.distance;
-
             const width = document.getElementById('paper-container').clientWidth;
-            const { xOffset } = this.config.availableElements;
-            function calculateRadius() {
-                const elementsTotalWidth = count * offsetPerElement() + xOffset;
-
-                if (width < elementsTotalWidth) {
-                    this.radius -= 5;
-                    calculateRadius();
-                } else {
-                    return;
-                }
-            }
-
-            calculateRadius();
+            const { xOffset, distance } = this.config.availableElements;
+            this.radius = Math.min((width - xOffset - count * distance) / count, this.radius);
 
             const el = this.roughCircle(this.radius, element.sign, element.bgColor, element.labelColor);
 
             // Sets it position {x, y}
-            el.position(i * offsetPerElement() + this.config.availableElements.xOffset, this.config.availableElements.yOffset);
+            el.position(i * (this.radius + this.config.availableElements.distance) + this.config.availableElements.xOffset, this.config.availableElements.yOffset);
 
             // Set it to be non-deleteable and attach its information
             el.set('deleteable', false);
