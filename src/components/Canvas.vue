@@ -19,7 +19,7 @@ import { Fragment } from "vue-fragment";
 import Rough from "roughjs/bundled/rough.cjs.js";
 import RoughLink from "./rough-elements/link";
 import ActionSwitch from "./ActionSwitch.vue";
-// import { shapes } from 'jointjs/joint.mjs';
+import * as joint from "jointjs";
 
 export default {
     name: "Canvas",
@@ -47,8 +47,27 @@ export default {
                 (magnet.getAttribute("magnet") === "on-shift" && evt.shiftKey)
             );
         },
+        isDeleteMode() {
+            return this.action === "delete";
+        },
+        isMoveMode() {
+            return this.action === "move";
+        },
+        getHighlightOptions() {
+            return {
+                highlighter: {
+                    name: "addClass",
+                    options: {
+                        className: `highlighted-cell ${this.action}`
+                    }
+                }
+            };
+        },
         createPaper() {
             const validateMagnet = this.validateMagnet;
+            const isMoveMode = this.isMoveMode;
+            const graph = this.graph;
+
             const paper = new this.$joint.dia.Paper({
                 el: this.$refs.joint,
                 cellViewNamespace: this.$joint.shapes,
@@ -67,7 +86,10 @@ export default {
                 },
                 allowLink: linkView => {
                     const { source, target } = linkView.model.attributes;
-                    return source.anchor && target.anchor;
+                    const validTarget = graph
+                        .getCell(target.id)
+                        .get("deleteable");
+                    return source.anchor && target.anchor && validTarget;
                 },
                 validateMagnet: validateMagnet,
                 defaultLink: function() {
@@ -77,7 +99,11 @@ export default {
                     return link;
                 },
                 interactive: cellView => {
-                    return cellView.model.get("movable");
+                    const movable = cellView.model.get("movable");
+                    const deleteable = cellView.model.get("deleteable");
+                    if (!deleteable && movable && !isMoveMode()) return false;
+                    return movable;
+                    // return cellView.model.get("movable");
                 }
             });
             this.paper = paper;
@@ -87,14 +113,14 @@ export default {
             const joint = this.$joint;
             const config = this.config;
             let selectedModelPosition;
-            const highlightOptions = {
-                highlighter: {
-                    name: "addClass",
-                    options: {
-                        className: "highlighted-cell"
-                    }
-                }
-            };
+            const getHighlightOptions = this.getHighlightOptions;
+            const isDeleteMode = this.isDeleteMode;
+
+            window.addEventListener(
+                "resize",
+                this.$joint.util.debounce(this.scaleContentToFit),
+                false
+            );
 
             this.paper.on({
                 "link:mouseenter": function(linkView) {
@@ -108,7 +134,15 @@ export default {
                         })
                     );
                 },
+                "link:pointerdown": function(linkView) {
+                    if (isDeleteMode()) {
+                        linkView.model.remove({ disconnectLinks: true });
+                    }
+                },
                 "element:pointerdown": function(elementView) {
+                    if (isDeleteMode() && elementView.model.get("deleteable")) {
+                        elementView.model.remove();
+                    }
                     selectedModelPosition = {
                         ...elementView.model.attributes.position
                     };
@@ -136,7 +170,7 @@ export default {
                 },
                 "element:mouseenter": function(elementView) {
                     if (elementView.model.get("movable")) {
-                        elementView.highlight(null, highlightOptions);
+                        elementView.highlight(null, getHighlightOptions());
                     }
 
                     if (
@@ -172,7 +206,7 @@ export default {
                 },
                 "cell:mouseleave": function(cellView) {
                     cellView.removeTools();
-                    cellView.unhighlight(null, highlightOptions);
+                    cellView.unhighlight(null, getHighlightOptions());
                 }
             });
         },
@@ -216,17 +250,12 @@ export default {
         }
     },
     mounted() {
+        window.joint = joint;
         this.graph = new this.$joint.dia.Graph();
 
         this.createPaper();
 
         this.addPaperListeners();
-
-        window.addEventListener(
-            "resize",
-            this.$joint.util.debounce(this.scaleContentToFit),
-            false
-        );
 
         this.scaleContentToFit();
 
@@ -241,10 +270,22 @@ export default {
 }
 
 .highlighted-cell {
-    outline: 20px;
+    outline: 30px;
     opacity: 0.9;
-    stroke: rgb(82, 200, 255);
     stroke-width: 10px;
+    filter: drop-shadow(0px 2px 2px rgb(121, 121, 121));
+}
+
+.highlighted-cell.move {
+    stroke: rgb(2, 175, 255);
+}
+
+.highlighted-cell.delete {
+    stroke: rgb(255, 34, 34);
+}
+
+.highlighted-cell.connect {
+    stroke: rgb(255, 218, 56);
 }
 
 .paper-relative {
