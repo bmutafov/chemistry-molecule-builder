@@ -18,23 +18,23 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import Canvas from './Canvas.vue';
-import parseGraph from '../utils/graph-parser';
+import Vue from "vue";
+import Canvas from "./Canvas.vue";
+import parseGraph from "../utils/graph-parser";
 
 export default Vue.extend({
-    name: 'GameLevelCreator',
+    name: "GameLevelCreator",
     components: {
-        Canvas,
+        Canvas
     },
     props: {
         name: String,
-        formula: String,
+        formula: String
     },
     data() {
         return {
-            paperHolderId: 'paper-container',
-            radius: 70,
+            paperHolderId: "paper-container",
+            radius: 70
         };
     },
     methods: {
@@ -46,7 +46,7 @@ export default Vue.extend({
         async getElementsForRender() {
             const url = `${this.$url}/api/element`;
             const resultElements = await this.$http.get(url, {
-                headers: { 'auth-token': this.$cookies.get('auth-token') },
+                headers: { "auth-token": this.$cookies.get("auth-token") }
             });
 
             if (resultElements.status >= 400) return false;
@@ -54,21 +54,26 @@ export default Vue.extend({
             const data = resultElements.data.data;
             return data;
         },
-        addAvailableElement(element, i, count) {
+        addAvailableElement(element, i) {
             // Creates the element
 
-            const width = document.getElementById('paper-container').clientWidth;
-            const { xOffset, distance } = this.config.availableElements;
-            this.radius = Math.min((width - xOffset - count * distance) / count, this.radius);
-
-            const el = this.roughCircle(this.radius, element.sign, element.bgColor, element.labelColor);
+            const el = this.roughCircle(
+                this.radius,
+                element.sign,
+                element.bgColor,
+                element.labelColor
+            );
 
             // Sets it position {x, y}
-            el.position(i * (this.radius + this.config.availableElements.distance) + this.config.availableElements.xOffset, this.config.availableElements.yOffset);
+            el.position(
+                i * (this.radius + this.config.availableElements.distance) +
+                    this.config.availableElements.xOffset,
+                this.config.availableElements.yOffset
+            );
 
             // Set it to be non-deleteable and attach its information
-            el.set('deleteable', false);
-            el.set('nodeInfo', { element, i });
+            el.set("deleteable", false);
+            el.set("nodeInfo", { element, i });
 
             // Add the elements to the graph
             this.graph.addCells(el);
@@ -79,19 +84,33 @@ export default Vue.extend({
             const config = this.config;
 
             // Creates the element holder box
-            const box = this.roughBox(document.getElementById('paper-container').clientWidth * 4, config.availableElements.boxHeight, config.availableElements.boxText);
+            const box = this.roughBox(
+                document.getElementById("paper-container").clientWidth * 4,
+                config.availableElements.boxHeight,
+                config.availableElements.boxText
+            );
 
             graph.addCells(box);
 
             // Fetches and renders the lements
             const data = await this.getElementsForRender();
-            data.forEach((element, i) => this.addAvailableElement(element, i, data.length));
+
+            // Sets the appropriate radius on smaller screens
+            const width = document.getElementById("paper-container")
+                .clientWidth;
+            const { xOffset, distance } = this.config.availableElements;
+            this.radius = Math.min(
+                (width - xOffset - data.length * distance) / data.length,
+                this.radius
+            );
+
+            data.forEach((element, i) => this.addAvailableElement(element, i));
 
             // Adds .unmovable-cell class to the holder box to attach custom styles
-            joint.V(paper.findViewByModel(box).el).addClass('unmovable-cell');
-        },
+            joint.V(paper.findViewByModel(box).el).addClass("unmovable-cell");
+        }
     },
-    mounted() {},
+    mounted() {}
 });
 </script>
 

@@ -41,49 +41,49 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Canvas from './Canvas.vue';
-import RoughButton from './RoughButton.vue';
-import CssLoader from './CssLoader.vue';
-import parseGraph from '../utils/graph-parser';
+import Vue from "vue";
+import Canvas from "./Canvas.vue";
+import RoughButton from "./RoughButton.vue";
+import CssLoader from "./CssLoader.vue";
+import parseGraph from "../utils/graph-parser";
 
 export default Vue.extend({
-    name: 'GameLevel',
+    name: "GameLevel",
     props: {
         elementsLink: {
-            type: String,
+            type: String
         },
         onSubmit: Function,
-        color: String,
+        color: String
     },
     components: {
         Canvas,
         RoughButton,
-        CssLoader,
+        CssLoader
     },
     watch: {
         async $route() {
             await this.getMoleculeData();
             await this.setupGraph(this.graph, this.paper);
-        },
+        }
     },
     data() {
         return {
             background: {
-                color: 'white',
+                color: "white"
             },
             loading: true,
             name: null,
             formula: null,
-            paperHolderId: 'paper-container',
+            paperHolderId: "paper-container",
             radius: 70,
             molecules: false,
-            error: false,
+            error: false
         };
     },
     methods: {
         subscript(text) {
-            return text.replace(/\d/gi, '<sub>$&</sub>');
+            return text.replace(/\d/gi, "<sub>$&</sub>");
         },
         /* Sends get request to the API to retrieve the elements included in the current molecule */
         async getElementsForRender() {
@@ -123,21 +123,26 @@ export default Vue.extend({
             }
         },
         /* Adds the element to the canvas */
-        addAvailableElement(element, i, count) {
+        addAvailableElement(element, i) {
             // Creates the element
 
-            const width = document.getElementById('paper-container').clientWidth;
-            const { xOffset, distance } = this.config.availableElements;
-            this.radius = Math.min((width - xOffset - count * distance) / count, this.radius);
-
-            const el = this.roughCircle(this.radius, element.sign, element.bgColor, element.labelColor);
+            const el = this.roughCircle(
+                this.radius,
+                element.sign,
+                element.bgColor,
+                element.labelColor
+            );
 
             // Sets it position {x, y}
-            el.position(i * (this.radius + this.config.availableElements.distance) + this.config.availableElements.xOffset, this.config.availableElements.yOffset);
+            el.position(
+                i * (this.radius + this.config.availableElements.distance) +
+                    this.config.availableElements.xOffset,
+                this.config.availableElements.yOffset
+            );
 
             // Set it to be non-deleteable and attach its information
-            el.set('deleteable', false);
-            el.set('nodeInfo', { element, i });
+            el.set("deleteable", false);
+            el.set("nodeInfo", { element, i });
 
             // Add the elements to the graph
             this.graph.addCells(el);
@@ -150,23 +155,40 @@ export default Vue.extend({
             const config = this.config;
 
             // Creates the element holder box
-            const box = this.roughBox(document.getElementById('paper-container').clientWidth * 10, config.availableElements.boxHeight, config.availableElements.boxText);
+            const box = this.roughBox(
+                document.getElementById("paper-container").clientWidth * 10,
+                config.availableElements.boxHeight,
+                config.availableElements.boxText
+            );
 
             graph.addCells(box);
 
             // Fetches and renders the lements
             const data = await this.getElementsForRender();
-            data.forEach((element, i) => this.addAvailableElement(element, i, data.length));
+
+            // Sets the appropriate radius on smaller screens
+            const width = document.getElementById("paper-container")
+                .clientWidth;
+            const { xOffset, distance } = this.config.availableElements;
+            this.radius = Math.min(
+                (width - xOffset - data.length * distance) / data.length,
+                this.radius
+            );
+
+            data.forEach((element, i) => this.addAvailableElement(element, i));
 
             // Adds .unmovable-cell class to the holder box to attach custom styles
-            joint.V(paper.findViewByModel(box).el).addClass('unmovable-cell');
+            joint.V(paper.findViewByModel(box).el).addClass("unmovable-cell");
         },
         /* On submit handler */
         async submit() {
             const data = this.graph.toJSON();
             const parsedData = parseGraph(data);
 
-            const result = await this.$http.post(`${this.$url}/api/molecule/check`, { formula: this.formula, solution: parsedData });
+            const result = await this.$http.post(
+                `${this.$url}/api/molecule/check`,
+                { formula: this.formula, solution: parsedData }
+            );
 
             if (result.status === 200) {
                 const isCorrect = result.data.data.correct;
@@ -174,96 +196,110 @@ export default Vue.extend({
             }
         },
         reset() {
-            const cells = this.graph.getCells().filter(c => c.get('deleteable'));
+            const cells = this.graph
+                .getCells()
+                .filter(c => c.get("deleteable"));
             this.graph.removeCells(cells);
         },
         fireSwal(isCorrect) {
             if (isCorrect) {
                 this.$swal({
-                    title: 'Good job!',
-                    text: 'You have entered the correct solution! Congratulations!',
-                    icon: 'success',
-                    confirmButtonText: 'Next Level',
+                    title: "Good job!",
+                    text:
+                        "You have entered the correct solution! Congratulations!",
+                    icon: "success",
+                    confirmButtonText: "Next Level",
                     showCancelButton: true,
-                    cancelButtonText: 'Stay',
-                    cancelButtonColor: '#fff',
+                    cancelButtonText: "Stay",
+                    cancelButtonColor: "#fff",
                     reverseButtons: true,
                     heightAuto: false,
                     customClass: {
-                        cancelButton: 'cancel-button',
+                        cancelButton: "cancel-button"
                     },
                     showLoaderOnConfirm: true,
                     preConfirm: async () => {
-                        return await this.$http.get(`${this.$url}/api/molecule`);
+                        return await this.$http.get(
+                            `${this.$url}/api/molecule`
+                        );
                     },
-                    allowOutsideClick: () => !this.$swal.isLoading(),
+                    allowOutsideClick: () => !this.$swal.isLoading()
                 }).then(result => {
                     if (result.value) {
                         const { data } = result.value.data;
                         // ensure same order every time
                         data.sort((a, b) => (a.formula > b.formula ? -1 : 1));
-                        let currentIndex = data.findIndex(m => m.formula === this.formula);
-                        const nextIndex = currentIndex === data.length - 1 ? 0 : currentIndex + 1;
+                        let currentIndex = data.findIndex(
+                            m => m.formula === this.formula
+                        );
+                        const nextIndex =
+                            currentIndex === data.length - 1
+                                ? 0
+                                : currentIndex + 1;
 
                         this.$router.push({
-                            name: 'Game',
-                            params: { formula: data[nextIndex].formula },
+                            name: "Game",
+                            params: { formula: data[nextIndex].formula }
                         });
                     }
                 });
             } else {
                 this.$swal({
-                    title: 'Incorrect!',
-                    text: 'Your solution was incorrect. Keep trying!',
-                    icon: 'error',
-                    confirmButtonText: 'Try again',
-                    confirmButtonColor: '#bf1313',
-                    heightAuto: false,
+                    title: "Incorrect!",
+                    text: "Your solution was incorrect. Keep trying!",
+                    icon: "error",
+                    confirmButtonText: "Try again",
+                    confirmButtonColor: "#bf1313",
+                    heightAuto: false
                 });
             }
         },
         help() {
             this.$swal
                 .mixin({
-                    confirmButtonText: 'Next &rarr;',
+                    confirmButtonText: "Next &rarr;",
                     showCancelButton: true,
-                    cancelButtonText: 'Close',
-                    cancelButtonColor: '#fff',
+                    cancelButtonText: "Close",
+                    cancelButtonColor: "#fff",
                     customClass: {
-                        cancelButton: 'cancel-button',
+                        cancelButton: "cancel-button"
                     },
                     heightAuto: false,
                     reverseButtons: true,
-                    progressSteps: ['1', '2', '3', '4'],
+                    progressSteps: ["1", "2", "3", "4"]
                 })
                 .queue([
                     {
-                        title: 'Controls',
-                        html: "<img src='https://i.snipboard.io/pIgTYM.jpg' /> <br /> \
-                            You can choose what action you want to perform by clicking the respective button in the action select menu!",
+                        title: "Controls",
+                        html:
+                            "<img src='https://i.snipboard.io/pIgTYM.jpg' /> <br /> \
+                            You can choose what action you want to perform by clicking the respective button in the action select menu!"
                     },
                     {
-                        title: 'Moving elements',
-                        html: "<img src='https://i.imgur.com/ognkPi5.gif' /><br /> \
-                            Drag and drop to move elements. When you need new elements just take them from the elements bar!",
+                        title: "Moving elements",
+                        html:
+                            "<img src='https://i.imgur.com/ognkPi5.gif' /><br /> \
+                            Drag and drop to move elements. When you need new elements just take them from the elements bar!"
                     },
                     {
-                        title: 'Creating bonds',
-                        html: '<img src=\'https://i.imgur.com/T61wzFy.gif\' /><br /> \
-                            Choose <i>"Connect mode"</i> to create bonds between two elements. You can alternatively hold <b>⇧ shift</b> and left click while on move mode.',
+                        title: "Creating bonds",
+                        html:
+                            "<img src='https://i.imgur.com/T61wzFy.gif' /><br /> \
+                            Choose <i>\"Connect mode\"</i> to create bonds between two elements. You can alternatively hold <b>⇧ shift</b> and left click while on move mode."
                     },
                     {
-                        title: 'Deleting',
-                        html: '<img src=\'https://i.imgur.com/UR4lMoi.gif\' /><br /> \
-                            Choose <i>"Delete mode"</i> to delete existing elements or bonds. You can alternatively hover and press the (x) button while on move or connect mode.',
-                    },
+                        title: "Deleting",
+                        html:
+                            "<img src='https://i.imgur.com/UR4lMoi.gif' /><br /> \
+                            Choose <i>\"Delete mode\"</i> to delete existing elements or bonds. You can alternatively hover and press the (x) button while on move or connect mode."
+                    }
                 ]);
-        },
+        }
     },
     async beforeMount() {
         await this.getAllMolecules();
         await this.getMoleculeData();
-    },
+    }
 });
 </script>
 
